@@ -3,4 +3,9 @@
 
 Mark Wiltshire
 
-Contains all code for PyCharm
+Contains all code for PyCharm Project
+
+PyCharm project requirements
+* pip install flask
+* pip install pymysql
+* pip install cryptography
