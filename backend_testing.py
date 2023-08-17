@@ -1,16 +1,37 @@
-# This is a sample Python script.
+# REST API and Database testing
+import requests
 
-# Press ⌃R to execute it or replace it with your code.
-# Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
+import db_connector
 
+# initialise DB Connection
+db_connector.get_connection()
+print("DB Connection Opened")
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press ⌘F8 to toggle the breakpoint.
+db_connector.init()
+print("DB initialised")
 
+#Set our user_name so we can test it later.
+USER_NAME = "mark"
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
+# 1 - POST new user data (USER_ID hardcoded)
+res = requests.post('http://127.0.0.1:5000/users/22', json={"user_name":USER_NAME})
+if res.ok:
+    print(f"POST {res.json()}")
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+# 2 - Use GET to check status code 200 and data equals what was posted in 1
+res = requests.get('http://127.0.0.1:5000/users/22')
+if res.ok:
+    print(f"POST {res.json()}")
+
+# 3 - Check data in the database
+# option 1 - using stored procedure - could also use new connector and SQL
+user_name_read = db_connector.read_user(22)
+if user_name_read == USER_NAME:
+    print(f"USER NAME CORRECT WRITTEN TO DB")
+else:
+    print(f"USER NAMES DIFFERENT DB = [{user_name_read}] SENT to REST API = [{USER_NAME}]")
+
+# EXTRA - run a delete to clean up after testing
+# therefore can run again.
+res = db_connector.delete_user(22)
+print(f"Cleaned up - Deleted user_id 22 [{res}]")
