@@ -2,6 +2,7 @@
 # res_app.py must be running
 import pymysql
 import requests
+from urllib3.exceptions import MaxRetryError
 
 SCHEMA_NAME = "sql8640267"
 # Set our Test Data - user_id and user_name so we can test it later.
@@ -9,14 +10,24 @@ TEST_USER_NAME = "mark"
 TEST_USER_ID = "22"
 
 # 1 - POST new user data (USER_ID hardcoded)
-res = requests.post('http://127.0.0.1:5000/users/'+TEST_USER_ID, json={"user_name": TEST_USER_NAME})
-if res.ok:
-    print(f"POST user_id[{TEST_USER_NAME}] {res.json()}")
+try:
+    res = requests.post('http://127.0.0.1:5000/users/'+TEST_USER_ID, json={"user_name": TEST_USER_NAME})
+    if res.ok:
+        print(f"POST user_id[{TEST_USER_NAME}] {res.json()}")
+except (ConnectionError, ConnectionError, MaxRetryError) as e:
+    print(f"Exception - ensure rest_app.py is running [{e}]")
+    raise Exception("Backend Testing failed")
 
 # 2 - Use GET to check status code 200 and data equals what was posted in 1
 res = requests.get('http://127.0.0.1:5000/users/'+TEST_USER_ID)
 if res.ok:
-    print(f"GET user_id[{TEST_USER_NAME}] {res.json()}")
+    json_response = res.json()
+    read_user_name = json_response["user_name"]
+    print(f"GET user_id[{TEST_USER_NAME}] {json_response}")
+    if read_user_name==TEST_USER_NAME:
+        print(f"SUCCESS user_name checked [{TEST_USER_NAME}] [{read_user_name}]")
+    else:
+        print(f"ERROR user_names different !!! [{TEST_USER_NAME}] [{read_user_name}]")
 
 # 3 - Check data in the database
 try:
@@ -46,6 +57,7 @@ except pymysql.Error as e:
 # therefore we can run test again and again
 # TODO could better control db_cursor to check it was setup correctly before running
 try:
+    print(f'Cleaning up TEST data - Deleting user_id [{TEST_USER_ID}]')
     row_count = db_cursor.execute(
         f"Delete from {SCHEMA_NAME}.users where user_id = {TEST_USER_ID}")
     # row_count shows the number of rows effected.

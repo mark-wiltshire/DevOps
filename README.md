@@ -24,7 +24,7 @@ Run res_app.py to test REST API
 * DELETE - http://127.0.0.1:5000/users/<user_id>  - will delete entry
 
 Run web_app.py to test Web Interface
-Utilises the db_connectory.py
+Utilises the db_connector.py
 * point browser to http://127.0.0.1:5001/users/get_user_data/1 
 
 Running frontend_testing.py - This will test Web interface 
@@ -35,3 +35,10 @@ Running frontend_testing.py - This will test Web interface
 
 Running backend_testing.py - This will test REST API and Database Testing
 * rest_app.py must be running
+
+Extras
+TODO 
+- PyDoc
+- Prepared Statements MySQL
+- DATETIME
+- config table in DB - API_Gateway - browser - user_name
