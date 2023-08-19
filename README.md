@@ -15,7 +15,7 @@ PyCharm project requirements
 Uses freesqldatabase.com for the MySQL Server connected to in the db_connector.py
 
 Run res_app.py to test REST API
-* Utilises the db_connector.py
+* Utilises the db_connector.py and globals.py
 * On Mac used https://apps.apple.com/gb/app/postcat-rest-api-testing/id1662268013?mt=12 to test
 * Using MySQL to check data stored in DB
 * GET - http://127.0.0.1:5000/users/<user_id> will return user_name
@@ -24,7 +24,7 @@ Run res_app.py to test REST API
 * DELETE - http://127.0.0.1:5000/users/<user_id>  - will delete entry
 
 Run web_app.py to test Web Interface
-Utilises the db_connector.py
+Utilises the db_connector.py and globals.py
 * point browser to http://127.0.0.1:5001/users/get_user_data/1 
 
 Running frontend_testing.py - This will test Web interface 
