@@ -60,5 +60,5 @@ def init():
                 #print(f"Adding to global_dict [{row[0]}][{row[1]}]")
                 global_dict[row[0]]=[row[1]]
             initialised = True
-        print(f"Initialised Globals")
+        print(f"Initialised Globals from DB")
         return initialised

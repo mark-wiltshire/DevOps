@@ -14,6 +14,7 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 
 # TODO would be nice to have these automatically picked up - i.e. not hardcoded
+# TODO need to use globals to set browser version ran out of time.
 # setup locations
 chrome_options = Options()
 chrome_options.binary_location = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
