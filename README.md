@@ -8,7 +8,7 @@ Contains all code for PyCharm Project
 PyCharm project requirements
 * pip install flask
 * pip install requests
-* pip install pymysql
+* pip install pymysql (want to replace with mysql to support prepared statements)
 * pip install cryptography
 * pip install selenium
 
@@ -37,8 +37,7 @@ Running backend_testing.py - This will test REST API and Database Testing
 * rest_app.py must be running
 
 Extras
-TODO 
-- PyDoc
-- Prepared Statements MySQL
-- DATETIME
-- config table in DB - API_Gateway - browser - user_name
+- PyDoc - DONE
+- Prepared Statements MySQL - pymysql doesn't support - had issues installing mysql
+- DATETIME - DONE - changed DB table
+- config table in DB - DONE - Reads into dictionary in new globals.py file

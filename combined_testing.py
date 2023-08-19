@@ -1,5 +1,8 @@
-# Web, REST API and Database testing
-# BOTH web_app.py AND res_app.py must be running
+"""
+Web, REST API and Database testing
+
+BOTH web_app.py AND res_app.py must be running
+"""
 import pymysql
 import requests
 from selenium import webdriver
@@ -9,10 +12,21 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from urllib3.exceptions import MaxRetryError
 
-SCHEMA_NAME = "sql8640267"
+import globals
 
+globals.init()
 
 def do_ask_for_int_in_range(range_str="", low=0, high=0):
+    """
+    Will ask and validate input to check with
+    a) have a number
+    b) number if in a range (optional)
+
+    :param range_str: String to display on error when number out of range
+    :param low: LOW range number must be above
+    :param high: HIGHT range number must be below
+    :return: int - the number typed in by the user
+    """
     while True:
         try:
             my_int = int(input("Enter number " + range_str))
@@ -56,13 +70,13 @@ if res.ok:
 # 3 - Check data in the database
 try:
     print(f'Opening DB Connection')
-    db_connection = pymysql.connect(host='sql8.freesqldatabase.com', port=3306, user='sql8640267',
-                                    passwd='FkJQptHWtm', db=SCHEMA_NAME)
+    db_connection = pymysql.connect(host=globals.DB_HOST, port=globals.DB_PORT, user=globals.DB_USER,
+                                    passwd=globals.DB_PASSWORD, db=globals.DB_SCHEMA_NAME)
     db_connection.autocommit(True)
     # Getting a cursor from Database
     db_cursor = db_connection.cursor()
     print(f'Getting user_name from user_id [{test_user_id}]')
-    row_count = db_cursor.execute(f"Select user_name from {SCHEMA_NAME}.users where user_id = {test_user_id}")
+    row_count = db_cursor.execute(f"Select user_name from {globals.DB_SCHEMA_NAME}.users where user_id = {test_user_id}")
     print(f'row_count is [{row_count}]')
     if row_count != 1:
         print(f'Select - Error row_count !=1 [{row_count}]')
@@ -120,7 +134,7 @@ driver.quit()
 try:
     print(f'Cleaning up TEST data - Deleting user_id [{test_user_id}]')
     row_count = db_cursor.execute(
-        f"Delete from {SCHEMA_NAME}.users where user_id = {test_user_id}")
+        f"Delete from {globals.DB_SCHEMA_NAME}.users where user_id = {test_user_id}")
     # row_count shows the number of rows effected.
     print(f'row_count is [{row_count}]')
     if row_count != 1:

@@ -1,11 +1,23 @@
-# rest_app.py
-# Provides REST API for the project
+"""
+rest_app.py
+
+Provides REST API for the project
+
+uses the db_connector.py module for the database access
+registers an atexit method to ensure database connections are closed when program closes
+
+Gets
+api_host
+api_port
+api_path - from globals - which are read from DB config table
+"""
 
 import atexit
 
 from flask import Flask, request
 
 import db_connector
+import globals
 
 app = Flask(__name__)
 
@@ -16,8 +28,27 @@ print("DB Connection Opened")
 db_connector.init()
 print("DB initialised")
 
+# initialise globals
+globals.init()
+# api gateway is host, port and path - need to split up
+api_gateway = str(globals.global_dict[globals.KEY_API_GATEWAY])
+#strip off quotes and brackets
+api_gateway = api_gateway[2:-2]
+print(f"API Gateway [{api_gateway}]")
+#split string
+api_host = api_gateway.split(':', 1)[0]
+print(f"API URL [{api_host}]")
+api_port = api_gateway.split(':', 1)[1].split("/",1)[0]
+print(f"API Port [{api_port}]")
+api_path = api_gateway.split(':', 1)[1].split("/",1)[1]
+print(f"API Path [{api_path}]")
 
 def close_up():
+    """
+    Will perform clean up and close database connections when the program exits.
+
+    :return: none
+    """
     db_connector.close_connection()
     print("DB Connection Closed")
 
@@ -27,8 +58,17 @@ atexit.register(close_up)
 
 
 # supported methods
-@app.route('/users/<user_id>', methods=['GET', 'POST', 'DELETE', 'PUT'])
+@app.route('/'+api_path+'/<user_id>', methods=['GET', 'POST', 'DELETE', 'PUT'])
 def user(user_id):
+    """
+    Defines the methods for the REST API
+    - GET - read user_name from database for the passed user_id
+    - POST - will save user_name for user_id
+    - DELETE - will delete from database this user_id
+    - PUT - will update user_name for this user_id in the database
+    :param user_id:
+    :return: JSON and status
+    """
     if request.method == 'GET':
         user_name = db_connector.read_user(user_id)
         if user_name == "":
@@ -61,4 +101,4 @@ def user(user_id):
             return {'status': 'error', 'reason': 'no such id'}, 500  # status code
 
 
-app.run(host='127.0.0.1', debug=True, port=5000)
+app.run(host=api_host, debug=True, port=api_port)

@@ -1,19 +1,36 @@
-# REST API and Database testing
-# res_app.py must be running
+"""
+REST API and Database testing
+
+res_app.py must be running
+
+Hardcoded test data
+Hardcoded username and password for the database
+
+"""
+
 import pymysql
 import requests
 from urllib3.exceptions import MaxRetryError
+import globals
+
+globals.init()
 
 SCHEMA_NAME = "sql8640267"
 # Set our Test Data - user_id and user_name so we can test it later.
-TEST_USER_NAME = "mark"
+# Now coming from globals
+# TEST_USER_NAME = "mark"
 TEST_USER_ID = "22"
+
+#Set test_user_name from the Globals - taken from config DB
+test_user_name = str(globals.global_dict[globals.KEY_TEST_USER_NAME])
+#strip off quotes and brackets
+test_user_name = test_user_name[2:-2]
 
 # 1 - POST new user data (USER_ID hardcoded)
 try:
-    res = requests.post('http://127.0.0.1:5000/users/'+TEST_USER_ID, json={"user_name": TEST_USER_NAME})
+    res = requests.post('http://127.0.0.1:5000/users/'+TEST_USER_ID, json={"user_name": test_user_name})
     if res.ok:
-        print(f"POST user_id[{TEST_USER_NAME}] {res.json()}")
+        print(f"POST user_id[{test_user_name}] {res.json()}")
 except (ConnectionError, ConnectionError, MaxRetryError) as e:
     print(f"Exception - ensure rest_app.py is running [{e}]")
     raise Exception("Backend Testing failed")
@@ -23,11 +40,11 @@ res = requests.get('http://127.0.0.1:5000/users/'+TEST_USER_ID)
 if res.ok:
     json_response = res.json()
     read_user_name = json_response["user_name"]
-    print(f"GET user_id[{TEST_USER_NAME}] {json_response}")
-    if read_user_name==TEST_USER_NAME:
-        print(f"SUCCESS user_name checked [{TEST_USER_NAME}] [{read_user_name}]")
+    print(f"GET user_id[{test_user_name}] {json_response}")
+    if read_user_name==test_user_name:
+        print(f"SUCCESS user_name checked [{test_user_name}] [{read_user_name}]")
     else:
-        print(f"ERROR user_names different !!! [{TEST_USER_NAME}] [{read_user_name}]")
+        print(f"ERROR user_names different !!! [{test_user_name}] [{read_user_name}]")
 
 # 3 - Check data in the database
 try:
@@ -45,10 +62,10 @@ try:
     else:
         record = db_cursor.fetchone()
         user_name_read = record[0]
-        if user_name_read == TEST_USER_NAME:
-            print(f"USER NAME CORRECT WRITTEN TO DB [{TEST_USER_NAME}] [{user_name_read}]")
+        if user_name_read == test_user_name:
+            print(f"USER NAME CORRECT WRITTEN TO DB [{test_user_name}] [{user_name_read}]")
         else:
-            print(f"USER NAMES DIFFERENT DB = [{user_name_read}] SENT to REST API = [{TEST_USER_NAME}]")
+            print(f"USER NAMES DIFFERENT DB = [{user_name_read}] SENT to REST API = [{test_user_name}]")
 
 except pymysql.Error as e:
     print(e)

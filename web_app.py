@@ -1,3 +1,12 @@
+"""
+wep_app.py
+
+Provides Web access to the project
+
+uses the db_connector.py module for the database access
+registers an atexit method to ensure database connections are closed when program closes
+
+"""
 import atexit
 
 from flask import Flask
@@ -13,8 +22,12 @@ print("DB Connection Opened")
 db_connector.init()
 print("DB initialised")
 
-
 def close_up():
+    """
+    Will perform clean up and close database connections when the program exits.
+
+    :return: none
+    """
     db_connector.close_connection()
     print("DB Connection Closed")
 
@@ -26,6 +39,12 @@ atexit.register(close_up)
 # accessed via <HOST>:<PORT>/users/get_user_data/
 @app.route('/users/get_user_data/<user_id>')
 def hello_user(user_id):
+    """
+    hello_user - will read the user_id from the URL and read the user_name from the database
+
+    :param user_id:
+    :return: HTML to display on the web page
+    """
     user_name = db_connector.read_user(user_id)
     if user_name == "":
         return f'<h1 id="error">no such user: {user_id}</h1>', 500  # status code

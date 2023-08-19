@@ -1,6 +1,10 @@
-# web interface testing
-# using Selenium Chrome Driver
+"""
+frontend_testing.py
 
+Front End testing the web_app.py MUST be running
+
+Hardcoded the Chrome and Chromedriver locations
+"""
 import sys
 
 from selenium import webdriver
@@ -20,6 +24,11 @@ driver.implicitly_wait(10)
 
 
 def output_versions():
+    """
+    Utility function to output the current versions
+    - Python, Selenium, Chrome, Chromedriver
+    :return:
+    """
     print(f"************************************")
     # output python version
     print(f"Python version: \t\t [{sys.version} {sys.version_info}]")
