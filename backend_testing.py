@@ -31,8 +31,10 @@ try:
     res = requests.post('http://127.0.0.1:5000/users/'+TEST_USER_ID, json={"user_name": test_user_name})
     if res.ok:
         print(f"POST user_id[{test_user_name}] {res.json()}")
-except (ConnectionError, ConnectionError, MaxRetryError) as e:
+except (Exception) as e:
+    print("***********************************************")
     print(f"Exception - ensure rest_app.py is running [{e}]")
+    print("***********************************************")
     raise Exception("Backend Testing failed")
 
 # 2 - Use GET to check status code 200 and data equals what was posted in 1
