@@ -85,6 +85,9 @@ try:
         print(f"Error when deleting user_id[{TEST_USER_ID}]")
     else:
         print(f"Cleaned up - Deleted user_id [{TEST_USER_ID}]")
+    db_cursor.close()
+    db_connection.close()
+    print(f"Database connection closed")
 except pymysql.Error as e:
     print(e)
     print(f"SQL Error when deleting user_id[{TEST_USER_ID}]")

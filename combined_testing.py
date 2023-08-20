@@ -129,6 +129,7 @@ driver.close()
 driver.quit()
 
 # EXTRA - run a delete to clean up after testing
+# and close DB cursor and connection
 # therefore we can run test again and again
 # TODO could better control db_cursor to check it was setup correctly before running
 try:
@@ -141,6 +142,10 @@ try:
         print(f"Error when deleting user_id[{test_user_id}]")
     else:
         print(f"Cleaned up - Deleted user_id [{test_user_id}]")
+
+    db_cursor.close()
+    db_connection.close()
+    print(f"Database connection closed")
 except pymysql.Error as e:
     print(e)
     print(f"SQL Error when deleting user_id[{test_user_id}]")
