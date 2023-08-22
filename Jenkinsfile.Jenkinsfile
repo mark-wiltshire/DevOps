@@ -31,7 +31,7 @@ pipeline {
                         try {
                             //sh 'nohup python rest_app.py &'
                             //sh 'nohup python3 rest_app.py &'
-                            sh 'nohup '.python_run_file.' rest_app.py &'
+                            sh 'nohup ${python_run_file} rest_app.py &'
                         } catch (Exception e) {
                             echo 'Exception Running Python rest_app.py!'
                             error('Aborting the build')
