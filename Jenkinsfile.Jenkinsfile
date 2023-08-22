@@ -29,7 +29,8 @@ pipeline {
                         bat 'start/min python rest_app.py'
                     } else {
                         try {
-                            sh 'nohup python3 rest_app.py &'
+                            //sh 'nohup python3 rest_app.py &'
+                            sh 'nohup /Users/markwiltshire/PycharmProjects/DevOps/venv/bin/python rest_app.py &'
                         } catch (Exception e) {
                             echo 'Exception Running Python rest_app.py!'
                         }
