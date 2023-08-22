@@ -4,6 +4,8 @@ pipeline {
         buildDiscarder(logRotator(numToKeepStr: '20', daysToKeepStr: '5'))
     }
     environment {
+        //where python runs in PyCharm so I get the environment
+        //would need to change this for other users
         python_run_file = '/Users/markwiltshire/PycharmProjects/DevOps/venv/bin/python'
     }
     stages {
@@ -53,7 +55,7 @@ pipeline {
                         }
                     } else {
                         try {
-                            sh 'nohup /Users/markwiltshire/PycharmProjects/DevOps/venv/bin/python web_app.py &'
+                            sh 'nohup ${python_run_file} web_app.py &'
                         } catch (Exception e) {
                             echo 'Exception Running Python rest_app.py!'
                             error('Aborting the build')
@@ -75,7 +77,7 @@ pipeline {
                         }
                     } else {
                         try {
-                            sh '/Users/markwiltshire/PycharmProjects/DevOps/venv/bin/python backend_testing.py'
+                            sh '${python_run_file} backend_testing.py'
                         } catch (Exception e) {
                             echo 'Exception Running Python backend_testing.py!'
                             error('Aborting the build')
@@ -103,9 +105,11 @@ pipeline {
 
     }
     post {
-        failure {
+        //failure {
+        always {
             echo 'Sent email with message about error'
             //http://<JENKINS_SERVER>:<PORT>/job/<JOB_NAME>/lastSuccessfulBuild/api/json?tree=result
+            emailext body: 'Look at the job here http://localhost:8080/job/DevOps%20Project%20Part%202/lastSuccessfulBuild/', recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']], subject: 'Test'
         }
     }
 }
