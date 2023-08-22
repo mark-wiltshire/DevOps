@@ -2,6 +2,9 @@
 Web, REST API and Database testing
 
 BOTH web_app.py AND res_app.py must be running
+
+Updated so that if user_id read from user input is already taken
+it will use randon user_id for testing.
 """
 import pymysql
 import requests
@@ -10,7 +13,7 @@ from selenium.common import NoSuchElementException, WebDriverException
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
-from urllib3.exceptions import MaxRetryError
+from urllib3.exceptions import MaxRetryError, NewConnectionError
 
 import globals
 
@@ -46,15 +49,27 @@ def do_ask_for_int_in_range(range_str="", low=0, high=0):
 test_user_id = do_ask_for_int_in_range()
 test_user_name = input("Enter your name:")
 
+print(f"---Test 1--- POST")
 # 1 - POST new user data REST API
 try:
     res = requests.post('http://127.0.0.1:5000/users/' + str(test_user_id), json={"user_name": test_user_name})
     if res.ok:
-        print(f"POST user_id[{test_user_id}] {res.json()}")
-except (ConnectionError, ConnectionError, MaxRetryError) as e:
+        json_response = res.json()
+        print(f"SUCCESS POST user_id[{test_user_id}] {json_response}")
+        # Check if res.json has user_added_with_new_id - i.e. user_id was changed
+        if "user_added_with_new_id" in json_response:
+            # if we get this ID for future tests this cycle.
+            post_user_id = json_response["user_added_with_new_id"]
+            #set following test to use this NEW user_id
+            print(f"test_user_id changed to [{post_user_id}] from [{test_user_id}]")
+            test_user_id = str(post_user_id)
+except (ConnectionRefusedError, NewConnectionError, MaxRetryError, ConnectionError) as e:
+    print("***********************************************")
     print(f"Exception - ensure rest_app.py is running [{e}]")
-    raise Exception("Backend Testing failed")
+    print("***********************************************")
+    raise Exception("Combined Testing failed")
 
+print(f"---Test 2--- GET")
 # 2 - GET REST API
 res = requests.get('http://127.0.0.1:5000/users/' + str(test_user_id))
 if res.ok:
@@ -67,9 +82,10 @@ if res.ok:
         print(f"ERROR user_names different !!! [{test_user_name}] [{read_user_name}]")
         raise Exception("Test Failed")
 
+print(f"---Test 3--- Check DB")
 # 3 - Check data in the database
 try:
-    print(f'Opening DB Connection')
+    print(f'Opening NEW DB Connection')
     db_connection = pymysql.connect(host=globals.DB_HOST, port=globals.DB_PORT, user=globals.DB_USER,
                                     passwd=globals.DB_PASSWORD, db=globals.DB_SCHEMA_NAME)
     db_connection.autocommit(True)
@@ -92,7 +108,10 @@ try:
 
 except pymysql.Error as e:
     print(e)
+    print(f"SQL Error when checking user in DB user_id[{test_user_id}]")
+    raise Exception("Test Failed")
 
+print(f"---Test 4--- Frontend Testing")
 # 4 Start Selenium Webriver
 # setup locations
 chrome_options = Options()
@@ -116,6 +135,9 @@ try:
     # 6 Check the user_name is correct.
     if web_get_user_name == test_user_name:
         print(f"SUCCESS Web Interface returned correct user_name for [{test_user_id}] [{test_user_name}] [{web_get_user_name}]")
+    else:
+        print(f"ERROR Web Interface returned incorrect user_name for [{test_user_id}] [{test_user_name}] [{web_get_user_name}]")
+        raise Exception("test failed")
 except NoSuchElementException as e:
     # id = user not found - find the error
     error_msg = driver.find_element(By.ID, value="error")
