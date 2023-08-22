@@ -3,7 +3,7 @@ pipeline {
     options {
         buildDiscarder(logRotator(numToKeepStr: '20', daysToKeepStr: '5'))
     }
-    environment {{
+    environment {
         my_var = '123'
     }
     stages {
@@ -21,9 +21,18 @@ pipeline {
                 echo 'Running Backend Server'
                 script {
                     if (checkOs() == 'Windows') {
+                        try {
+                            bat 'start/min python rest_app.py'
+                        } catch (Exception e) {
+                            echo 'Exception Running Python rest_app.py!'
+                        }
                         bat 'start/min python rest_app.py'
                     } else {
-                        sh 'nohup python3 rest_app.py &'
+                        try {
+                            sh 'nohup python3 rest_app.py &'
+                        } catch (Exception e) {
+                            echo 'Exception Running Python rest_app.py!'
+                        }
                         //sh 'nohup python rest_app.py &'
                     }
                 }
