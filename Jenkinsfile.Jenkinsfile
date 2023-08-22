@@ -4,7 +4,7 @@ pipeline {
         buildDiscarder(logRotator(numToKeepStr: '20', daysToKeepStr: '5'))
     }
     environment {
-        my_var = '123'
+        python_run_file = '/Users/markwiltshire/PycharmProjects/DevOps/venv/bin/python'
     }
     stages {
         stage('Pull Code') {
@@ -31,7 +31,7 @@ pipeline {
                         try {
                             //sh 'nohup python rest_app.py &'
                             //sh 'nohup python3 rest_app.py &'
-                            sh 'nohup /Users/markwiltshire/PycharmProjects/DevOps/venv/bin/python rest_app.py &'
+                            sh 'nohup '.python_run_file.' rest_app.py &'
                         } catch (Exception e) {
                             echo 'Exception Running Python rest_app.py!'
                             error('Aborting the build')
