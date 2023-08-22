@@ -3,7 +3,7 @@ pipeline {
     options {
         buildDiscarder(logRotator(numToKeepStr: '20', daysToKeepStr: '5'))
     }
-    environment {
+    environment {{
         my_var = '123'
     }
     stages {
@@ -23,7 +23,8 @@ pipeline {
                     if (checkOs() == 'Windows') {
                         bat 'start/min python rest_app.py'
                     } else {
-                        sh 'nohup python rest_app.py &'
+                        sh 'nohup /usr/bin/python3 rest_app.py &'
+                        //sh 'nohup python rest_app.py &'
                     }
                 }
             }
