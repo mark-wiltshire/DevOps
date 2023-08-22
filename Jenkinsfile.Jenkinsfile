@@ -7,11 +7,12 @@ pipeline {
         //where python runs in PyCharm so I get the environment
         //would need to change this for other users
         python_run_file = '/Users/markwiltshire/PycharmProjects/DevOps/venv/bin/python'
+        JOB_BASE_NAME: JOB_NAME.split('/').last()
     }
     stages {
         stage('Pull Code') {
             steps {
-                echo '${env.JOB_NAME}'
+                echo '${JOB_BASE_NAME}'
                 echo 'Pulling Code'
                 script {
                     properties([pipelineTriggers([pollSCM('30 * * * *')])])
