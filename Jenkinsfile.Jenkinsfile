@@ -9,6 +9,7 @@ pipeline {
         python_run_file = '/Users/markwiltshire/PycharmProjects/DevOps/venv/bin/python'
     }
     stages {
+        echo ${env.JOB_NAME}
         stage('Pull Code') {
             steps {
                 echo 'Pulling Code'
@@ -107,9 +108,9 @@ pipeline {
     post {
         //failure {
         always {
-            echo 'Sent email with message about error'
+            echo 'Sent email with message about error for ${env.JOB_NAME} ${env.BUILD_NUMBER}'
             //http://<JENKINS_SERVER>:<PORT>/job/<JOB_NAME>/lastSuccessfulBuild/api/json?tree=result
-            emailext body: 'Look at the job here http://localhost:8080/job/DevOps%20Project%20Part%202/lastSuccessfulBuild/', recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']], subject: 'Test'
+            emailext body: 'Look at the job here http://localhost:8080/job/${env.JOB_NAME}/${env.BUILD_NUMBER}/', recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']], subject: 'Jenkins ${env.JOB_NAME} ${env.BUILD_NUMBER}'
         }
     }
 }
