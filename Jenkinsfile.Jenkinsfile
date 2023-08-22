@@ -9,9 +9,9 @@ pipeline {
         python_run_file = '/Users/markwiltshire/PycharmProjects/DevOps/venv/bin/python'
     }
     stages {
-        echo ${env.JOB_NAME}
         stage('Pull Code') {
             steps {
+                echo ${env.JOB_NAME}
                 echo 'Pulling Code'
                 script {
                     properties([pipelineTriggers([pollSCM('30 * * * *')])])
