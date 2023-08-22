@@ -7,12 +7,11 @@ pipeline {
         //where python runs in PyCharm so I get the environment
         //would need to change this for other users
         python_run_file = '/Users/markwiltshire/PycharmProjects/DevOps/venv/bin/python'
-        JOB_BASE_NAME = "${JOB_NAME.substring(JOB_NAME.lastIndexOf('/') + 1, JOB_NAME.length())}"
     }
     stages {
         stage('Pull Code') {
             steps {
-                echo '${JOB_BASE_NAME}'
+                echo "Running ${env.JOB_NAME}  Build ${env.BUILD_ID} on ${env.JENKINS_URL}"
                 echo 'Pulling Code'
                 script {
                     properties([pipelineTriggers([pollSCM('30 * * * *')])])
@@ -24,22 +23,17 @@ pipeline {
             steps {
                 echo 'Running Backend Server'
                 script {
-                    if (checkOs() == 'Windows') {
-                        try {
+                    try {
+                        if (checkOs() == 'Windows') {
                             bat 'start/min python rest_app.py'
-                        } catch (Exception e) {
-                            echo 'Exception Running Python rest_app.py!'
-                            error('Aborting the build')
-                        }
-                    } else {
-                        try {
+                        } else {
                             //sh 'nohup python rest_app.py &'
                             //sh 'nohup python3 rest_app.py &'
                             sh 'nohup ${python_run_file} rest_app.py &'
-                        } catch (Exception e) {
-                            echo 'Exception Running Python rest_app.py!'
-                            error('Aborting the build')
                         }
+                    } catch (Exception e) {
+                        echo 'Exception Running Python rest_app.py!'
+                        error('Aborting the build')
                     }
                 }
             }
@@ -48,20 +42,15 @@ pipeline {
             steps {
                 echo 'Running Frontend Server'
                 script {
-                    if (checkOs() == 'Windows') {
-                        try {
+                    try {
+                        if (checkOs() == 'Windows') {
                             bat 'start/min python web_app.py'
-                        } catch (Exception e) {
-                            echo 'Exception Running Python rest_app.py!'
-                            error('Aborting the build')
-                        }
-                    } else {
-                        try {
+                        } else {
                             sh 'nohup ${python_run_file} web_app.py &'
-                        } catch (Exception e) {
-                            echo 'Exception Running Python rest_app.py!'
-                            error('Aborting the build')
                         }
+                    } catch (Exception e) {
+                        echo 'Exception Running Python rest_app.py!'
+                        error('Aborting the build')
                     }
                 }
             }
@@ -70,20 +59,15 @@ pipeline {
             steps {
                 echo 'Running Backend Testing'
                 script {
-                    if (checkOs() == 'Windows') {
-                        try {
+                    try {
+                        if (checkOs() == 'Windows') {
                             bat 'python backend_testing.py'
-                        } catch (Exception e) {
-                            echo 'Exception Running Python rest_app.py!'
-                            error('Aborting the build')
-                        }
-                    } else {
-                        try {
+                        } else {
                             sh '${python_run_file} backend_testing.py'
-                        } catch (Exception e) {
-                            echo 'Exception Running Python backend_testing.py!'
-                            error('Aborting the build')
                         }
+                    } catch (Exception e) {
+                        echo 'Exception Running Python backend_testing.py!'
+                        error('Aborting the build')
                     }
                 }
             }
@@ -91,17 +75,52 @@ pipeline {
         stage('Run Frontend Testing') {
             steps {
                 echo 'Running Frontend Testing'
+                script {
+                    try {
+                        if (checkOs() == 'Windows') {
+                            bat 'python frontend_testing.py'
+                        } else {
+                            sh '${python_run_file} frontend_testing.py'
+                        }
+                    } catch (Exception e) {
+                        echo 'Exception Running Python frontend_testing.py!'
+                        error('Aborting the build')
+                    }
+                }
             }
         }
         stage('Run Combined Testing') {
             steps {
                 echo 'Running Combined Testing'
+                script {
+                    try {
+                        if (checkOs() == 'Windows') {
+                            bat 'python combined_testing.py'
+                        } else {
+                            sh '${python_run_file} combined_testing.py'
+                        }
+                    } catch (Exception e) {
+                        echo 'Exception Running Python combined_testing.py!'
+                        error('Aborting the build')
+                    }
+                }
             }
         }
         stage('Run Clean Up') {
             steps {
                 echo 'Running Cleanup'
-
+                script {
+                    try {
+                        if (checkOs() == 'Windows') {
+                            bat 'python clean_environment.py'
+                        } else {
+                            sh '${python_run_file} clean_environment.py'
+                        }
+                    } catch (Exception e) {
+                        echo 'Exception Running Python clean_environment.py!'
+                        error('Aborting the build')
+                    }
+                }
             }
         }
 
@@ -109,9 +128,11 @@ pipeline {
     post {
         //failure {
         always {
-            echo 'Sent email with message about error for ${env.JOB_NAME} ${env.BUILD_NUMBER}'
+            message = "Running ${env.JOB_NAME}  Build ${env.BUILD_ID} on ${env.JENKINS_URL}\n\n"
+            message+= "Look at the job here http://localhost:8080/job/${env.JOB_NAME}/${env.BUILD_NUMBER}\n\n"
+            echo "Sent email with message about error for ${env.JOB_NAME}  Build ${env.BUILD_ID} on ${env.JENKINS_URL}"
             //http://<JENKINS_SERVER>:<PORT>/job/<JOB_NAME>/lastSuccessfulBuild/api/json?tree=result
-            emailext body: 'Look at the job here http://localhost:8080/job/${env.JOB_NAME}/${env.BUILD_NUMBER}/', recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']], subject: 'Jenkins ${env.JOB_NAME} ${env.BUILD_NUMBER}'
+            emailext body: message, recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']], subject: 'Jenkins ${env.JOB_NAME} ${env.BUILD_NUMBER}'
         }
     }
 }

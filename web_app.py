@@ -8,10 +8,17 @@ registers an atexit method to ensure database connections are closed when progra
 
 """
 import atexit
+import os
+import signal
 
 from flask import Flask
 
 import db_connector
+
+# import os
+
+# looking for environment variable - TODO remove
+# print(os.environ)
 
 app = Flask(__name__)
 
@@ -21,6 +28,7 @@ print("DB Connection Opened")
 
 db_connector.init()
 print("DB initialised")
+
 
 def close_up():
     """
@@ -50,6 +58,23 @@ def hello_user(user_id):
         return f'<h1 id="error">no such user: {user_id}</h1>', 500  # status code
     else:
         return f'<h1 id="user">{user_name}</h1>', 200  # status code
+
+
+@app.route('/stop_server')
+def stop_server():
+    """
+    Stop the server
+
+    :return: String
+    """
+    print(f"Stopping the server")
+    try:
+        # os.kill(os.getpid(), signal.CTRL_C_EVENT)
+        os.kill(os.getpid(), signal.SIGKILL)
+        return 'Server stopped'
+    except Exception as e:
+        print(f"Exception when stopping server [{e}]")
+        return 'Server NOT stopped'
 
 
 # host is pointing at local machine address

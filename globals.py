@@ -47,7 +47,7 @@ def init():
     if not initialised:
         # Open DB connection using dictionary
         connection = pymysql.connect(host=DB_HOST, port=DB_PORT, user=DB_USER,
-                                 passwd=DB_PASSWORD, db=DB_SCHEMA_NAME)
+                                     passwd=DB_PASSWORD, db=DB_SCHEMA_NAME)
         cursor = connection.cursor()
         # setup globals from reading data from config
         # COULD READ THIS USING A DICTIONARY CURSOR
@@ -58,8 +58,8 @@ def init():
         else:
             data = cursor.fetchall()
             for row in data:
-                #print(f"Adding to global_dict [{row[0]}][{row[1]}]")
-                global_dict[row[0]]=[row[1]]
+                # print(f"Adding to global_dict [{row[0]}][{row[1]}]")
+                global_dict[row[0]] = [row[1]]
             initialised = True
         print(f"Initialised Globals from DB")
         return initialised

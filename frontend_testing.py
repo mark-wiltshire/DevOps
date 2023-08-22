@@ -49,20 +49,22 @@ def output_versions():
 # output our versions
 output_versions()
 
+print(f"---Test 1--- POST")
 # Lookup user_id 1 from web interface - web_app.py has to be running
 try:
     driver.get("http://127.0.0.1:5001/users/get_user_data/1")
 except WebDriverException as e:
-    print(f"WebDriverException - ensure web_app.py is running [{e}]")
+    print(f"ERROR - WebDriverException - ensure web_app.py is running [{e}]")
     raise Exception("Frontend Testing Failed")
 
 try:
     user_name = driver.find_element(By.ID, value="user").text
-    print(f"user_name is [{user_name}] for user_id [1]")
+    print(f"SUCCESS - user_name is [{user_name}] for user_id [1]")
 except NoSuchElementException as e:
     # id = user not found - find the error
     error_msg = driver.find_element(By.ID, value="error")
     print(f"ERROR Error message is [{error_msg}] for user_id [1]")
+    raise Exception("Frontend Testing Failed")
 
 # close the current tab
 driver.close()

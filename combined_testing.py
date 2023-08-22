@@ -19,6 +19,7 @@ import globals
 
 globals.init()
 
+
 def do_ask_for_int_in_range(range_str="", low=0, high=0):
     """
     Will ask and validate input to check with
@@ -60,7 +61,7 @@ try:
         if "user_added_with_new_id" in json_response:
             # if we get this ID for future tests this cycle.
             post_user_id = json_response["user_added_with_new_id"]
-            #set following test to use this NEW user_id
+            # set following test to use this NEW user_id
             print(f"test_user_id changed to [{post_user_id}] from [{test_user_id}]")
             test_user_id = str(post_user_id)
 except (ConnectionRefusedError, NewConnectionError, MaxRetryError, ConnectionError) as e:
@@ -92,7 +93,8 @@ try:
     # Getting a cursor from Database
     db_cursor = db_connection.cursor()
     print(f'Getting user_name from user_id [{test_user_id}]')
-    row_count = db_cursor.execute(f"Select user_name from {globals.DB_SCHEMA_NAME}.users where user_id = {test_user_id}")
+    row_count = db_cursor.execute(
+        f"Select user_name from {globals.DB_SCHEMA_NAME}.users where user_id = {test_user_id}")
     print(f'row_count is [{row_count}]')
     if row_count != 1:
         print(f'Select - Error row_count !=1 [{row_count}]')
@@ -101,9 +103,9 @@ try:
         record = db_cursor.fetchone()
         user_name_read = record[0]
         if user_name_read == test_user_name:
-            print(f"USER NAME CORRECT WRITTEN TO DB [{test_user_name}] [{user_name_read}]")
+            print(f"SUCCESS - USER NAME CORRECT WRITTEN TO DB [{test_user_name}] [{user_name_read}]")
         else:
-            print(f"USER NAMES DIFFERENT DB = [{user_name_read}] SENT to REST API = [{test_user_name}]")
+            print(f"ERROR - USER NAMES DIFFERENT DB = [{user_name_read}] SENT to REST API = [{test_user_name}]")
             raise Exception("Test Failed")
 
 except pymysql.Error as e:
@@ -124,7 +126,7 @@ driver.implicitly_wait(10)
 # 5 Navigate to web interface using the new user id
 # Lookup test_user_id from web interface - web_app.py has to be running
 try:
-    driver.get("http://127.0.0.1:5001/users/get_user_data/"+str(test_user_id))
+    driver.get("http://127.0.0.1:5001/users/get_user_data/" + str(test_user_id))
 except WebDriverException as e:
     print(f"WebDriverException - ensure web_app.py is running [{e}]")
     raise Exception("test failed")
@@ -134,9 +136,11 @@ try:
     print(f"user_name is [{web_get_user_name}] for user_id [{test_user_id}]")
     # 6 Check the user_name is correct.
     if web_get_user_name == test_user_name:
-        print(f"SUCCESS Web Interface returned correct user_name for [{test_user_id}] [{test_user_name}] [{web_get_user_name}]")
+        print(
+            f"SUCCESS Web Interface returned correct user_name for [{test_user_id}] [{test_user_name}] [{web_get_user_name}]")
     else:
-        print(f"ERROR Web Interface returned incorrect user_name for [{test_user_id}] [{test_user_name}] [{web_get_user_name}]")
+        print(
+            f"ERROR Web Interface returned incorrect user_name for [{test_user_id}] [{test_user_name}] [{web_get_user_name}]")
         raise Exception("test failed")
 except NoSuchElementException as e:
     # id = user not found - find the error

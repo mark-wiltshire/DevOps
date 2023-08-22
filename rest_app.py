@@ -21,8 +21,8 @@ api_path - from globals - which are read from DB config table
 import atexit
 import os
 import signal
-
 from random import randint
+
 from flask import Flask, request
 
 import db_connector
@@ -30,12 +30,14 @@ import globals
 
 app = Flask(__name__)
 
+
 def get_random_user_id():
     """
     Looksup random integer
     :return: int
     """
     return randint(1, 10000)
+
 
 # initialise DB Connection
 db_connector.get_connection()
@@ -48,16 +50,17 @@ print("DB initialised")
 globals.init()
 # api gateway is host, port and path - need to split up
 api_gateway = str(globals.global_dict[globals.KEY_API_GATEWAY])
-#strip off quotes and brackets
+# strip off quotes and brackets
 api_gateway = api_gateway[2:-2]
 print(f"API Gateway [{api_gateway}]")
-#split string
+# split string
 api_host = api_gateway.split(':', 1)[0]
 print(f"API URL [{api_host}]")
-api_port = api_gateway.split(':', 1)[1].split("/",1)[0]
+api_port = int(api_gateway.split(':', 1)[1].split("/", 1)[0])
 print(f"API Port [{api_port}]")
-api_path = api_gateway.split(':', 1)[1].split("/",1)[1]
+api_path = api_gateway.split(':', 1)[1].split("/", 1)[1]
 print(f"API Path [{api_path}]")
+
 
 def close_up():
     """
@@ -74,7 +77,7 @@ atexit.register(close_up)
 
 
 # supported methods
-@app.route('/'+api_path+'/<user_id>', methods=['GET', 'POST', 'DELETE', 'PUT'])
+@app.route('/' + api_path + '/<user_id>', methods=['GET', 'POST', 'DELETE', 'PUT'])
 def user(user_id):
     """
     Defines the methods for the REST API
@@ -165,11 +168,12 @@ def stop_server():
     """
     print(f"Stopping the server")
     try:
-        #os.kill(os.getpid(), signal.CTRL_C_EVENT)
+        # os.kill(os.getpid(), signal.CTRL_C_EVENT)
         os.kill(os.getpid(), signal.SIGKILL)
         return 'Server stopped'
     except Exception as e:
         print(f"Exception when stopping server [{e}]")
         return 'Server NOT stopped'
+
 
 app.run(host=api_host, debug=True, port=api_port)
