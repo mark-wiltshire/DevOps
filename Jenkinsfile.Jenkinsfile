@@ -65,6 +65,23 @@ pipeline {
         stage('Run Backend Testing') {
             steps {
                 echo 'Running Backend Testing'
+                script {
+                    if (checkOs() == 'Windows') {
+                        try {
+                            bat 'start/min python web_app.py'
+                        } catch (Exception e) {
+                            echo 'Exception Running Python rest_app.py!'
+                            error('Aborting the build')
+                        }
+                    } else {
+                        try {
+                            sh 'nohup /Users/markwiltshire/PycharmProjects/DevOps/venv/bin/python backend_testing.py &'
+                        } catch (Exception e) {
+                            echo 'Exception Running Python backend_testing.py!'
+                            error('Aborting the build')
+                        }
+                    }
+                }
             }
         }
         stage('Run Frontend Testing') {
