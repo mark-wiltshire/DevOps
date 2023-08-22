@@ -7,7 +7,7 @@ pipeline {
         //where python runs in PyCharm so I get the environment
         //would need to change this for other users
         python_run_file = '/Users/markwiltshire/PycharmProjects/DevOps/venv/bin/python'
-        JOB_BASE_NAME: JOB_NAME.split('/').last()
+        JOB_BASE_NAME = "${JOB_NAME.substring(JOB_NAME.lastIndexOf('/') + 1, JOB_NAME.length())}"
     }
     stages {
         stage('Pull Code') {
