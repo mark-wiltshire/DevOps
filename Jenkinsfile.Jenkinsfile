@@ -25,16 +25,17 @@ pipeline {
                             bat 'start/min python rest_app.py'
                         } catch (Exception e) {
                             echo 'Exception Running Python rest_app.py!'
+                            error('Aborting the build')
                         }
-                        bat 'start/min python rest_app.py'
                     } else {
                         try {
+                            //sh 'nohup python rest_app.py &'
                             //sh 'nohup python3 rest_app.py &'
                             sh 'nohup /Users/markwiltshire/PycharmProjects/DevOps/venv/bin/python rest_app.py &'
                         } catch (Exception e) {
                             echo 'Exception Running Python rest_app.py!'
+                            error('Aborting the build')
                         }
-                        //sh 'nohup python rest_app.py &'
                     }
                 }
             }
@@ -44,9 +45,19 @@ pipeline {
                 echo 'Running Frontend Server'
                 script {
                     if (checkOs() == 'Windows') {
-                        bat 'start/min python web_app.py'
+                        try {
+                            bat 'start/min python web_app.py'
+                        } catch (Exception e) {
+                            echo 'Exception Running Python rest_app.py!'
+                            error('Aborting the build')
+                        }
                     } else {
-                        sh 'nohup python3 web_app.py &'
+                        try {
+                            sh 'nohup /Users/markwiltshire/PycharmProjects/DevOps/venv/bin/python web_app.py &'
+                        } catch (Exception e) {
+                            echo 'Exception Running Python rest_app.py!'
+                            error('Aborting the build')
+                        }
                     }
                 }
             }
@@ -69,6 +80,7 @@ pipeline {
         stage('Run Clean Up') {
             steps {
                 echo 'Running Cleanup'
+
             }
         }
 
