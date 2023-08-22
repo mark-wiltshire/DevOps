@@ -2,8 +2,14 @@
 ### First Part Project for DevOps Course
 
 Mark Wiltshire
-
 Contains all code for PyCharm Project
+## Part 2
+### Creating CI Pipeline for a Python Project
+
+21.08.2023 - Added Jenkinsfile, stop_server
+
+## Part 1 
+### Building Python Frontend and Backend Stack
 
 PyCharm project requirements
 * pip install flask
@@ -45,9 +51,15 @@ Running combined_testing.py - This will test BOTH Web and Rest API
 * Will then used this for test data 
 * Clean's test data when completed
 
+globals.py
+* contains global STATICS and variables - read from config DB in a dictionary
 
 Extras
-- PyDoc - DONE
-- Prepared Statements MySQL - pymysql doesn't support - had issues installing mysql
-- DATETIME - DONE - changed DB table
-- config table in DB - DONE - Reads into dictionary in new globals.py file
+- 1. PyDoc - DONE
+- 2. Prepared Statements MySQL - pymysql doesn't support - had issues installing mysql
+           I have added prepared statements - but this states pymysql doesn't fully support it.
+           https://stackoverflow.com/questions/65638489/prepared-statement-pymysql-who-is-correct
+- 3. DATETIME - DONE - changed DB table
+- 4. config table in DB - DONE - Reads into dictionary in new globals.py file
+- 5. ID already taken - use new ID - DONE
+- 6. PyPika - 
