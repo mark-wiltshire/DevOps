@@ -11,7 +11,7 @@ pipeline {
     stages {
         stage('Pull Code') {
             steps {
-                echo ${env.JOB_NAME}
+                echo '${env.JOB_NAME}'
                 echo 'Pulling Code'
                 script {
                     properties([pipelineTriggers([pollSCM('30 * * * *')])])
