@@ -17,7 +17,8 @@ import pymysql.cursors
 # STATIC DB KEY VALUES
 KEY_API_GATEWAY = "API_Gateway"
 KEY_TEST_BROWSER = "test_browser"
-KEY_TEST_USER_NAME = "user_name"
+KEY_TEST_USER_NAME = "test_user_name"
+KEY_TEST_USER_ID = "test_user_id"
 
 # STATIC VALUES
 DB_HOST = "sql8.freesqldatabase.com"
@@ -28,7 +29,7 @@ DB_SCHEMA_NAME = "sql8640267"
 
 STRING_FORMAT_TIME = '%Y-%m-%d %H:%M:%S'
 
-# global dictionary
+# global dictionary of all config parameters
 global_dict = defaultdict()
 initialised = False
 

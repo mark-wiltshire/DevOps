@@ -100,6 +100,7 @@ def init():
             _cursor.execute(prepared_config_sql, (globals.KEY_API_GATEWAY, '127.0.0.1:5000/users'))
             _cursor.execute(prepared_config_sql, (globals.KEY_TEST_BROWSER, 'chrome'))
             _cursor.execute(prepared_config_sql, (globals.KEY_TEST_USER_NAME, 'Bob'))
+            _cursor.execute(prepared_config_sql, (globals.KEY_TEST_USER_ID, '22'))
             print(f'Completed CONFIG Table')
         else:
             print(f'CONFIG Table exists')
