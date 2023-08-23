@@ -8,6 +8,8 @@ pipeline {
         //would need to change this for other users
         python_run_file = '/Users/markwiltshire/PycharmProjects/DevOps/venv/bin/python'
         email_message = "ERROR Running ${env.JOB_NAME}  Build ${env.BUILD_ID} on ${env.JENKINS_URL}\n\n Look at the job here http://localhost:8080/job/${env.JOB_NAME}/${env.BUILD_NUMBER}\n\n"
+        cmb_test_user_id = 22
+        cmb_test_user_name = "Mark Twain"
     }
     stages {
         stage('Pull Code') {
@@ -93,12 +95,13 @@ pipeline {
         stage('Run Combined Testing') {
             steps {
                 echo 'Running Combined Testing'
+                //passing parameters for user input
                 script {
                     try {
                         if (checkOs() == 'Windows') {
-                            bat 'python combined_testing.py'
+                            bat 'python combined_testing.py ${cmb_test_user_id} ${cmb_test_user_name}'
                         } else {
-                            sh '${python_run_file} combined_testing.py'
+                            sh '${python_run_file} combined_testing.py ${cmb_test_user_id} ${cmb_test_user_name}'
                         }
                     } catch (Exception e) {
                         echo 'Exception Running Python combined_testing.py!'

@@ -6,6 +6,8 @@ BOTH web_app.py AND res_app.py must be running
 Updated so that if user_id read from user input is already taken
 it will use randon user_id for testing.
 """
+import sys
+
 import pymysql
 import requests
 from selenium import webdriver
@@ -18,6 +20,19 @@ from urllib3.exceptions import MaxRetryError, NewConnectionError
 import globals
 
 globals.init()
+
+# for running from Jenkins get parameters passed
+# as this will be used instead of input
+parameters = sys.argv
+number_of_arguments = len(parameters)-1
+parameters_passed = False
+
+if number_of_arguments > 0:
+    print(f"Parameters passed")
+    print(f"No of args passed = {number_of_arguments}")
+    parameters_passed = True
+else:
+    print(f"NO parameters passed")
 
 
 def do_ask_for_int_in_range(range_str="", low=0, high=0):
@@ -45,10 +60,19 @@ def do_ask_for_int_in_range(range_str="", low=0, high=0):
         else:
             return my_int
 
+# For running from Jenkins get user_id and user_name from parameters passed
+test_user_id = None
+test_user_name = None
 
-# Get TESTING data from user
-test_user_id = do_ask_for_int_in_range()
-test_user_name = input("Enter your name:")
+if parameters_passed:
+    test_user_id = sys.argv[1]
+    test_user_name = sys.argv[2]
+else:
+    # Get TESTING data from user
+    test_user_id = do_ask_for_int_in_range()
+    test_user_name = input("Enter your name:")
+
+print(f"USING TEST DATA test_user_id [{test_user_id}] test_user_name [{test_user_name}]")
 
 print(f"---Test 1--- POST")
 # 1 - POST new user data REST API
