@@ -7,7 +7,7 @@ pipeline {
         //where python runs in PyCharm so I get the environment
         //would need to change this for other users
         python_run_file = '/Users/markwiltshire/PycharmProjects/DevOps/venv/bin/python'
-        email_message = "ERROR Running ${env.JOB_NAME}  Build ${env.BUILD_ID} on ${env.JENKINS_URL}\n\n Look at the job here http://localhost:8080/job/${env.JOB_NAME}/${env.BUILD_NUMBER}\n\n"
+        email_message = "ERROR Running ${env.JOB_NAME}  Build ${env.BUILD_ID} on ${env.JENKINS_URL}\n\n Look at the job here ${env.BUILD_URL}\n\n"
         cmb_test_user_id = 22
         cmb_test_user_name = "Mark"
     }
@@ -147,8 +147,7 @@ pipeline {
         }
         failure {
             echo "Sent email with message about error for ${env.JOB_NAME}  Build ${env.BUILD_ID} on ${env.JENKINS_URL}"
-            //http://<JENKINS_SERVER>:<PORT>/job/<JOB_NAME>/lastSuccessfulBuild/api/json?tree=result
-            emailext body: email_message, recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']], subject: "Jenkins ${env.JOB_NAME} ${env.BUILD_NUMBER}"
+            emailext body: email_message, recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']], subject: "FAILED: Jenkins ${env.JOB_NAME} Build ${env.BUILD_NUMBER}"
         }
     }
 }
