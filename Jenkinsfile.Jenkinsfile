@@ -7,6 +7,8 @@ pipeline {
         //where python runs in PyCharm so I get the environment
         //would need to change this for other users
         python_run_file = '/Users/markwiltshire/PycharmProjects/DevOps/venv/bin/python'
+        email_message = "ERROR Running ${env.JOB_NAME}  Build ${env.BUILD_ID} on ${env.JENKINS_URL}\n\n
+                         Look at the job here http://localhost:8080/job/${env.JOB_NAME}/${env.BUILD_NUMBER}\n\n"
     }
     stages {
         stage('Pull Code') {
@@ -128,11 +130,9 @@ pipeline {
     post {
         //failure {
         always {
-            message = "Running ${env.JOB_NAME}  Build ${env.BUILD_ID} on ${env.JENKINS_URL}\n\n"
-            message+= "Look at the job here http://localhost:8080/job/${env.JOB_NAME}/${env.BUILD_NUMBER}\n\n"
             echo "Sent email with message about error for ${env.JOB_NAME}  Build ${env.BUILD_ID} on ${env.JENKINS_URL}"
             //http://<JENKINS_SERVER>:<PORT>/job/<JOB_NAME>/lastSuccessfulBuild/api/json?tree=result
-            emailext body: message, recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']], subject: 'Jenkins ${env.JOB_NAME} ${env.BUILD_NUMBER}'
+            emailext body: email_message, recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']], subject: 'Jenkins ${env.JOB_NAME} ${env.BUILD_NUMBER}'
         }
     }
 }
