@@ -110,10 +110,28 @@ pipeline {
                 }
             }
         }
+        stage('Run Clean Up') {
+            steps {
+                echo 'Running Cleanup'
+                script {
+                    try {
+                        if (checkOs() == 'Windows') {
+                            bat 'python clean_environment.py'
+                        } else {
+                            sh '${python_run_file} clean_environment.py'
+                        }
+                    } catch (Exception e) {
+                        echo 'Exception Running Python clean_environment.py!'
+                        error('Aborting the build')
+                    }
+                }
+            }
+        }
+
     }
     post {
         always {
-            //we ALWAYS want to clean up even if the build failed
+            //we always want to clean up even if the build failed
             echo 'Running Cleanup'
             script {
                 try {
