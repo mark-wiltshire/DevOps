@@ -89,9 +89,9 @@ pipeline {
                 script {
                     try {
                         if (checkOs() == 'Windows') {
-                            bat 'python frontend_testing.py ${db_host} ${db_port} ${db_user} ${db_password}'
+                            bat 'python frontend_testing.py'
                         } else {
-                            sh '${python_run_file} frontend_testing.py ${db_host} ${db_port} ${db_user} ${db_password}'
+                            sh '${python_run_file} frontend_testing.py'
                         }
                     } catch (Exception e) {
                         echo 'Exception Running Python frontend_testing.py!'
