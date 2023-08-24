@@ -14,6 +14,10 @@ pipeline {
         db_port = 3306
         db_user = "sql8640267"
         db_password = "FkJQptHWtm"
+
+        //credentials in Jenkins
+        MYSQL_CREDS     = credentials('mysql')
+
     }
     stages {
         stage('Pull Code') {
@@ -36,7 +40,7 @@ pipeline {
                         } else {
                             //sh 'nohup python rest_app.py &'
                             //sh 'nohup python3 rest_app.py &'
-                            sh 'nohup ${python_run_file} rest_app.py ${db_host} ${db_port} ${db_user} ${db_password} &'
+                            sh 'nohup ${python_run_file} rest_app.py ${db_host} ${db_port} $MYSQL_CREDS_USR $MYSQL_CREDS_PSW &'
                         }
                     } catch (Exception e) {
                         echo 'Exception Running Python rest_app.py!'
@@ -105,7 +109,7 @@ pipeline {
                         if (checkOs() == 'Windows') {
                             bat 'python combined_testing.py ${db_host} ${db_port} ${db_user} ${db_password} ${cmb_test_user_id} ${cmb_test_user_name}'
                         } else {
-                            sh '${python_run_file} combined_testing.py ${cmb_test_user_id} ${cmb_test_user_name}'
+                            sh '${python_run_file} combined_testing.py ${db_host} ${db_port} ${db_user} ${db_password} ${cmb_test_user_id} ${cmb_test_user_name}'
                         }
                     } catch (Exception e) {
                         echo 'Exception Running Python combined_testing.py!'
