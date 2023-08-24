@@ -53,9 +53,9 @@ pipeline {
                 script {
                     try {
                         if (checkOs() == 'Windows') {
-                            bat 'start/min python web_app.py ${db_host} ${db_port} $MYSQL_CREDS_USR $MYSQL_CREDS_PSW'
+                            bat 'start/min python web_app.py $db_host $db_port $MYSQL_CREDS_USR $MYSQL_CREDS_PSW'
                         } else {
-                            sh 'nohup ${python_run_file} web_app.py ${db_host} ${db_port} $MYSQL_CREDS_USR $MYSQL_CREDS_PSW &'
+                            sh 'nohup ${python_run_file} web_app.py $db_host $db_port $MYSQL_CREDS_USR $MYSQL_CREDS_PSW &'
                         }
                     } catch (Exception e) {
                         echo 'Exception Running Python rest_app.py!'
@@ -70,9 +70,9 @@ pipeline {
                 script {
                     try {
                         if (checkOs() == 'Windows') {
-                            bat 'python backend_testing.py ${db_host} ${db_port} $MYSQL_CREDS_USR $MYSQL_CREDS_PSW'
+                            bat 'python backend_testing.py $db_host $db_port $MYSQL_CREDS_USR $MYSQL_CREDS_PSW'
                         } else {
-                            sh '${python_run_file} backend_testing.py ${db_host} ${db_port} $MYSQL_CREDS_USR $MYSQL_CREDS_PSW'
+                            sh '${python_run_file} backend_testing.py $db_host $db_port $MYSQL_CREDS_USR $MYSQL_CREDS_PSW'
                         }
                     } catch (Exception e) {
                         echo 'Exception Running Python backend_testing.py!'
@@ -105,9 +105,9 @@ pipeline {
                 script {
                     try {
                         if (checkOs() == 'Windows') {
-                            bat 'python combined_testing.py ${db_host} ${db_port} $MYSQL_CREDS_USR $MYSQL_CREDS_PSW -i ${cmb_test_user_id} -n ${cmb_test_user_name}'
+                            bat 'python combined_testing.py $db_host $db_port $MYSQL_CREDS_USR $MYSQL_CREDS_PSW -i $cmb_test_user_id -n $cmb_test_user_name'
                         } else {
-                            sh '${python_run_file} combined_testing.py ${db_host} ${db_port} $MYSQL_CREDS_USR $MYSQL_CREDS_PSW -i ${cmb_test_user_id} -n ${cmb_test_user_name}'
+                            sh '${python_run_file} combined_testing.py $db_host $db_port $MYSQL_CREDS_USR $MYSQL_CREDS_PSW -i $cmb_test_user_id -n $cmb_test_user_name'
                         }
                     } catch (Exception e) {
                         echo 'Exception Running Python combined_testing.py!'
