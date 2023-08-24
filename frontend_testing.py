@@ -4,6 +4,12 @@ frontend_testing.py
 Front End testing the web_app.py MUST be running
 
 Hardcoded the Chrome and Chromedriver locations
+
+required arguments
+db_host
+db_port
+db_user
+db_password
 """
 import sys
 

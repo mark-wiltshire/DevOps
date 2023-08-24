@@ -6,13 +6,31 @@ res_app.py must be running
 Hardcoded test data
 Hardcoded username and password for the database
 
+required arguments
+db_host
+db_port
+db_user
+db_password
 """
-
-import pymysql
+import argparse  # https://docs.python.org/3/howto/argparse.html
 import requests
 
 import globals
+import db_connector
 
+# parse arguments
+parser = argparse.ArgumentParser(description="Run Backend Testing")
+parser.add_argument("db_host", type=str, help="the DB host")
+parser.add_argument("db_port", type=int, help="the DB port")
+parser.add_argument("db_user", type=str, help="the DB username")
+parser.add_argument("db_password", type=str, help="the DB password")
+args = parser.parse_args()
+
+# open and initialise DB Connection
+db_connector.get_connection(args.db_host, args.db_port, args.db_user, args.db_password)
+db_connector.init()
+
+# initialise globals
 globals.init()
 
 # Set test_user_name from the Globals - taken from config DB
@@ -71,50 +89,18 @@ else:
 
 print(f"---Test 3--- Check DB")
 # 3 - Check data in the database
-try:
-    print(f'Opening NEW DB Connection')
-    db_connection = pymysql.connect(host='sql8.freesqldatabase.com', port=3306, user='sql8640267',
-                                    passwd='FkJQptHWtm', db=globals.DB_SCHEMA_NAME)
-    db_connection.autocommit(True)
-    # Getting a cursor from Database
-    db_cursor = db_connection.cursor()
-    print(f'Getting user_name from user_id [{test_user_id}]')
-    row_count = db_cursor.execute(
-        f"Select user_name from {globals.DB_SCHEMA_NAME}.users where user_id = {test_user_id}")
-    print(f'Results found for [{test_user_id}] is [{row_count}]')
-    # we should expect 1 row
-    if row_count != 1:
-        print(f'Select - Error row_count !=1 [{row_count}]')
-        raise Exception("Backend Testing failed")
-    else:
-        record = db_cursor.fetchone()
-        user_name_read = record[0]
-        if user_name_read == test_user_name:
-            print(f"USER NAME CORRECT WRITTEN TO DB [{test_user_name}] [{user_name_read}]")
-        else:
-            print(f"USER NAMES DIFFERENT DB = [{user_name_read}] SENT to REST API = [{test_user_name}]")
-            raise Exception("Backend Testing failed")
-except pymysql.Error as e:
-    print(e)
-    print(f"SQL Error when checking user in DB user_id[{test_user_id}]")
+# using db_connector.read_user()
+user_name_read = db_connector.read_user(test_user_id)
+if user_name_read == test_user_name:
+    print(f"USER NAME CORRECT WRITTEN TO DB [{test_user_name}] [{user_name_read}]")
+else:
+    print(f"USER NAMES DIFFERENT DB = [{user_name_read}] SENT to REST API = [{test_user_name}]")
     raise Exception("Backend Testing failed")
 
 # EXTRA - run a delete to clean up after testing
 # therefore we can run test again and again
-# TODO could better control db_cursor to check it was setup correctly before running
-try:
-    print(f'Cleaning up TEST data - Deleting user_id [{test_user_id}]')
-    row_count = db_cursor.execute(
-        f"Delete from {globals.DB_SCHEMA_NAME}.users where user_id = {test_user_id}")
-    # row_count shows the number of rows effected.
-    print(f'row_count is [{row_count}]')
-    if row_count != 1:
-        print(f"Error when deleting user_id[{test_user_id}]")
-    else:
-        print(f"Cleaned up - Deleted user_id [{test_user_id}]")
-    db_cursor.close()
-    db_connection.close()
-    print(f"Database connection closed")
-except pymysql.Error as e:
-    print(e)
-    print(f"SQL Error when deleting user_id[{test_user_id}]")
+print(f'Cleaning up TEST data - Deleting user_id [{test_user_id}]')
+if db_connector.delete_user(test_user_id):
+    print(f"Cleaned up - Deleted user_id [{test_user_id}]")
+else:
+    print(f"Error when deleting user_id[{test_user_id}]")

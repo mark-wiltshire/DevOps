@@ -9,7 +9,20 @@ Contains all code for PyCharm Project
 
 ### Creating CI Pipeline for a Python Project
 
-21.08.2023 - Added Jenkinsfile, stop_server
+Completed first pass of Part 2 of project.
+TODO - clean_environment.py not Running
+
+Now have build Jenkinsfiles - which will checkout, runs apps and tests build in Part 1
+clean_environment.py - will stop web_app.py and rest_app.py servers in testing
+/templates/404.html - 404 page
+
+Extras
+1. Send email on failure - DONE
+2. Parameterized Build - TODO
+3. sys.argvs - IN PROGRESS
+4. Route Error Handling - DONE
+
+
 
 ## Part 1
 

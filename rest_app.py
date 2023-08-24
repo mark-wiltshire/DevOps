@@ -12,6 +12,12 @@ if user_id is already in use in the DB - it will try with random ID till it work
 when adding user - if user_id is already used will keep trying with new random ID until user is added
 will return new user_id
 
+required arguments
+db_host
+db_port
+db_user
+db_password
+
 Gets
 api_host
 api_port
@@ -21,33 +27,32 @@ api_path - from globals - which are read from DB config table
 import atexit
 import os
 import signal
+import argparse
 from random import randint
 
 from flask import Flask, request
 
-import db_connector
 import globals
+import db_connector
 
-app = Flask(__name__)
+# parse arguments
+parser = argparse.ArgumentParser(description="Run our Rest API")
+parser.add_argument("db_host", type=str, help="the DB host")
+parser.add_argument("db_port", type=int, help="the DB port")
+parser.add_argument("db_user", type=str, help="the DB username")
+parser.add_argument("db_password", type=str, help="the DB password")
+args = parser.parse_args()
 
-
-def get_random_user_id():
-    """
-    Looksup random integer
-    :return: int
-    """
-    return randint(1, 10000)
-
-
-# initialise DB Connection
-db_connector.get_connection()
-print("DB Connection Opened")
-
+# Open and initialise DB Connection
+db_connector.get_connection(args.db_host, args.db_port, args.db_user, args.db_password)
 db_connector.init()
-print("DB initialised")
 
 # initialise globals
 globals.init()
+
+# setup app
+app = Flask(__name__)
+
 # api gateway is host, port and path - need to split up
 api_gateway = str(globals.global_dict[globals.KEY_API_GATEWAY])
 # strip off quotes and brackets
@@ -60,6 +65,14 @@ api_port = int(api_gateway.split(':', 1)[1].split("/", 1)[0])
 print(f"API Port [{api_port}]")
 api_path = api_gateway.split(':', 1)[1].split("/", 1)[1]
 print(f"API Path [{api_path}]")
+
+
+def get_random_user_id():
+    """
+    Looksup random integer
+    :return: int
+    """
+    return randint(1, 10000)
 
 
 def close_up():
@@ -174,6 +187,12 @@ def stop_server():
     except Exception as e:
         print(f"Exception when stopping server [{e}]")
         return 'Server NOT stopped'
+
+
+@app.errorhandler(404)
+def page_not_found(e):
+    print(f"Page not found [{e}]")
+    return {'status': 'error', 'reason': 'route not found'}, 404  # status code
 
 
 app.run(host=api_host, debug=True, port=api_port)

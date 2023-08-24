@@ -1,31 +1,19 @@
 """
 Global store of parameters
 
-Makes it easier to use parameters in multiple locations
-initialised in db_connector.init()
+Stores any Hardcoded values
 
-Will open its own DB connection and set globals then close DB connection
-
-#TODO - currently init in db_connector will create tables if they don't exist - this should be removed
-You have to run db_connector - get_connection() then init() to re-initialise database
+Uses db_connector.init_config() to populate global_dict of all config parameters stores in the database
 """
 from collections import defaultdict
 
-import pymysql
-import pymysql.cursors
+import db_connector
 
 # STATIC DB KEY VALUES
 KEY_API_GATEWAY = "API_Gateway"
 KEY_TEST_BROWSER = "test_browser"
 KEY_TEST_USER_NAME = "test_user_name"
 KEY_TEST_USER_ID = "test_user_id"
-
-# STATIC VALUES
-DB_HOST = "sql8.freesqldatabase.com"
-DB_USER = "sql8640267"
-DB_PORT = 3306
-DB_PASSWORD = "FkJQptHWtm"
-DB_SCHEMA_NAME = "sql8640267"
 
 STRING_FORMAT_TIME = '%Y-%m-%d %H:%M:%S'
 
@@ -45,21 +33,8 @@ def init():
     global initialised
 
     if not initialised:
-        # Open DB connection using dictionary
-        connection = pymysql.connect(host=DB_HOST, port=DB_PORT, user=DB_USER,
-                                     passwd=DB_PASSWORD, db=DB_SCHEMA_NAME)
-        cursor = connection.cursor()
-        # setup globals from reading data from config
-        # COULD READ THIS USING A DICTIONARY CURSOR
-        row_count = cursor.execute(f"Select * from {DB_SCHEMA_NAME}.config")
-        print(f'CONFIG row_count is [{row_count}]')
-        if row_count == 0:
-            return False
-        else:
-            data = cursor.fetchall()
-            for row in data:
-                # print(f"Adding to global_dict [{row[0]}][{row[1]}]")
-                global_dict[row[0]] = [row[1]]
-            initialised = True
+        global global_dict
+        global_dict = db_connector.init_config()
+        initialised = True
         print(f"Initialised Globals from DB")
         return initialised

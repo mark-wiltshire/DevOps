@@ -16,14 +16,11 @@ Methods
 - delete_user() - will delete user
 
 """
+from collections import defaultdict
 from datetime import datetime
 
 import pymysql
-
 import globals
-
-# check globals initialised
-globals.init()
 
 # pymuysql reference - https://pymysql.readthedocs.io/en/latest/modules/index.html
 # Uses freesqldatabase.com for the MySQL Server
@@ -32,9 +29,11 @@ globals.init()
 _connection = None
 _cursor = None
 
+_db_schema = ""  # global for use in other methods - set in get_connection
+
 
 # TODO - should really store the password securely
-def get_connection():
+def get_connection(db_host, db_port, db_user, db_password):
     """
     Will create or return a connection to the Database
     user and password currently hardcoded.
@@ -43,9 +42,11 @@ def get_connection():
     """
     global _connection
     global _cursor
+    global _db_schema
     if not _connection:
-        _connection = pymysql.connect(host=globals.DB_HOST, port=globals.DB_PORT, user=globals.DB_USER,
-                                      passwd=globals.DB_PASSWORD, db=globals.DB_SCHEMA_NAME)
+        _db_schema = db_user
+        _connection = pymysql.connect(host=db_host, port=db_port, user=db_user,
+                                      passwd=db_password, db=_db_schema)
         _connection.autocommit(True)
         # Getting a cursor from Database
         # for prepared statements (using mysql)
@@ -53,6 +54,7 @@ def get_connection():
         # use line below.
         # _cursor = _connection.cursor(prepared=True)
         _cursor = _connection.cursor()
+        print("DB Connection Opened")
     return _connection
 
 
@@ -74,7 +76,7 @@ def init():
         if row_count != 1:
             # create table if it doesn't exist
             print(f'Creating USERS Table')
-            create_table = "CREATE TABLE `" + globals.DB_SCHEMA_NAME + (
+            create_table = "CREATE TABLE `" + _db_schema + (
                 "`.`users`(`user_id` INT NOT NULL,`user_name` VARCHAR(50) "
                 "NOT NULL, creation_date DATETIME NOT NULL, "
                 "PRIMARY KEY (`user_id`));")
@@ -90,13 +92,13 @@ def init():
         if row_count != 1:
             # create table if it doesn't exist
             print(f'Creating CONFIG Table')
-            create_table = "CREATE TABLE `" + globals.DB_SCHEMA_NAME + (
+            create_table = "CREATE TABLE `" + _db_schema + (
                 "`.`config`(`key` VARCHAR(50) NOT NULL,`value` VARCHAR(50) NOT NULL, PRIMARY KEY (`key`));")
             _cursor.execute(create_table)
             created_config_table = True
 
             print(f'Inserting CONFIG Table')
-            prepared_config_sql = """INSERT into """ + globals.DB_SCHEMA_NAME + """.config (`key`, `value`) VALUES (%s, %s)"""
+            prepared_config_sql = """INSERT into """ + _db_schema + """.config (`key`, `value`) VALUES (%s, %s)"""
             _cursor.execute(prepared_config_sql, (globals.KEY_API_GATEWAY, '127.0.0.1:5000/users'))
             _cursor.execute(prepared_config_sql, (globals.KEY_TEST_BROWSER, 'chrome'))
             _cursor.execute(prepared_config_sql, (globals.KEY_TEST_USER_NAME, 'Bob'))
@@ -109,11 +111,35 @@ def init():
         print(e)
         return False
 
+    print("DB Connection initialised")
+
     # calculate return
     if created_config_table or created_user_table:
         return True
     else:
         return False
+
+
+def init_config():
+    """
+    init_config
+
+    Read the config DB table nd return all values as a Dictionary
+    TODO add better error handling in here.
+    :return:
+    """
+    config_dict = defaultdict()
+    print(f'in init_config')
+    row_count = _cursor.execute(f"Select * from {_db_schema}.config")
+    print(f'CONFIG row_count is [{row_count}]')
+    if row_count == 0:
+        return config_dict
+    else:
+        data = _cursor.fetchall()
+        for row in data:
+            # print(f"Adding to global_dict [{row[0]}][{row[1]}]")
+            config_dict[row[0]] = [row[1]]
+        return config_dict
 
 
 def close_connection():
@@ -147,7 +173,7 @@ def add_user(user_id, user_name):
 
     # Inserting data into table
     try:
-        insert_query = """INSERT into """ + globals.DB_SCHEMA_NAME + """.users (user_id, user_name, creation_date) VALUES (%s, %s, %s)"""
+        insert_query = """INSERT into """ + _db_schema + """.users (user_id, user_name, creation_date) VALUES (%s, %s, %s)"""
         print(f"Insert Query [{insert_query}]")
         tuple_data = (user_id, user_name, time_stamp)
         for a in tuple_data:
@@ -170,7 +196,7 @@ def read_user(user_id):
     # Reading user_name from table
     print(f'in read_user [{user_id}]')
     try:
-        row_count = _cursor.execute(f"Select user_name from {globals.DB_SCHEMA_NAME}.users where user_id = {user_id}")
+        row_count = _cursor.execute(f"Select user_name from {_db_schema}.users where user_id = {user_id}")
         print(f'row_count is [{row_count}]')
         if row_count != 1:
             return ""
@@ -196,7 +222,7 @@ def update_user(user_id, user_name):
     print(f'in update_user [{user_id}][{user_name}]')
     try:
         row_count = _cursor.execute(
-            f"Update {globals.DB_SCHEMA_NAME}.users set user_name = '{user_name}'  where user_id = {user_id}")
+            f"Update {_db_schema}.users set user_name = '{user_name}'  where user_id = {user_id}")
         # row_count shows the number of rows effected.
         print(f'row_count is [{row_count}]')
         if row_count != 1:
@@ -218,7 +244,7 @@ def delete_user(user_id):
     print(f'in update_user [{user_id}]')
     try:
         row_count = _cursor.execute(
-            f"Delete from {globals.DB_SCHEMA_NAME}.users where user_id = {user_id}")
+            f"Delete from {_db_schema}.users where user_id = {user_id}")
         # row_count shows the number of rows effected.
         print(f'row_count is [{row_count}]')
         if row_count != 1:

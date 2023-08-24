@@ -5,11 +5,21 @@ BOTH web_app.py AND res_app.py must be running
 
 Updated so that if user_id read from user input is already taken
 it will use randon user_id for testing.
-"""
-import sys
 
-import pymysql
+required arguments
+db_host
+db_port
+db_user
+db_password
+
+Optional arguments
+-i --id <test_user_id> to use for testing
+-n --name <test_user_name> to use for testing
+
+"""
+import argparse
 import requests
+
 from selenium import webdriver
 from selenium.common import NoSuchElementException, WebDriverException
 from selenium.webdriver.chrome.options import Options
@@ -18,21 +28,26 @@ from selenium.webdriver.common.by import By
 from urllib3.exceptions import MaxRetryError, NewConnectionError
 
 import globals
+import db_connector
 
+# parse arguments
+parser = argparse.ArgumentParser(description="Run Combined Testing")
+parser.add_argument("db_host", type=str, help="the DB host")
+parser.add_argument("db_port", type=int, help="the DB port")
+parser.add_argument("db_user", type=str, help="the DB username")
+parser.add_argument("db_password", type=str, help="the DB password")
+parser.add_argument("-i", "--id", type=int, help="test_user_id to user in testing", default=0)
+parser.add_argument("-n", "--name", type=str, help="test_user_name to user in testing", default="")
+args = parser.parse_args()
+
+# open and initialise DB Connection
+db_connector.get_connection(args.db_host, args.db_port, args.db_user, args.db_password)
+db_connector.init()
+
+# initialise globals
 globals.init()
 
-# for running from Jenkins get parameters passed
-# as this will be used instead of input
-parameters = sys.argv
-number_of_arguments = len(parameters)-1
 parameters_passed = False
-
-if number_of_arguments > 0:
-    print(f"Parameters passed")
-    print(f"No of args passed = {number_of_arguments}")
-    parameters_passed = True
-else:
-    print(f"NO parameters passed")
 
 
 def do_ask_for_int_in_range(range_str="", low=0, high=0):
@@ -60,17 +75,16 @@ def do_ask_for_int_in_range(range_str="", low=0, high=0):
         else:
             return my_int
 
-# For running from Jenkins get user_id and user_name from parameters passed
-test_user_id = None
-test_user_name = None
 
-if parameters_passed:
-    test_user_id = sys.argv[1]
-    test_user_name = sys.argv[2]
-else:
-    # Get TESTING data from user
-    test_user_id = do_ask_for_int_in_range()
-    test_user_name = input("Enter your name:")
+# if we don't have test user_id passed ask for one
+if args.id == 0:
+    args.id = do_ask_for_int_in_range()
+# if we don't have test user)name passed ask for one
+if args.name == "":
+    args.name = input("Enter your name:")
+
+test_user_id = args.id
+test_user_name = args.name
 
 print(f"USING TEST DATA test_user_id [{test_user_id}] test_user_name [{test_user_name}]")
 
@@ -109,32 +123,11 @@ if res.ok:
 
 print(f"---Test 3--- Check DB")
 # 3 - Check data in the database
-try:
-    print(f'Opening NEW DB Connection')
-    db_connection = pymysql.connect(host=globals.DB_HOST, port=globals.DB_PORT, user=globals.DB_USER,
-                                    passwd=globals.DB_PASSWORD, db=globals.DB_SCHEMA_NAME)
-    db_connection.autocommit(True)
-    # Getting a cursor from Database
-    db_cursor = db_connection.cursor()
-    print(f'Getting user_name from user_id [{test_user_id}]')
-    row_count = db_cursor.execute(
-        f"Select user_name from {globals.DB_SCHEMA_NAME}.users where user_id = {test_user_id}")
-    print(f'row_count is [{row_count}]')
-    if row_count != 1:
-        print(f'Select - Error row_count !=1 [{row_count}]')
-        raise Exception("Test Failed")
-    else:
-        record = db_cursor.fetchone()
-        user_name_read = record[0]
-        if user_name_read == test_user_name:
-            print(f"SUCCESS - USER NAME CORRECT WRITTEN TO DB [{test_user_name}] [{user_name_read}]")
-        else:
-            print(f"ERROR - USER NAMES DIFFERENT DB = [{user_name_read}] SENT to REST API = [{test_user_name}]")
-            raise Exception("Test Failed")
-
-except pymysql.Error as e:
-    print(e)
-    print(f"SQL Error when checking user in DB user_id[{test_user_id}]")
+user_name_read = db_connector.read_user(test_user_id)
+if user_name_read == test_user_name:
+    print(f"SUCCESS - USER NAME CORRECT WRITTEN TO DB [{test_user_name}] [{user_name_read}]")
+else:
+    print(f"ERROR - USER NAMES DIFFERENT DB = [{user_name_read}] SENT to REST API = [{test_user_name}]")
     raise Exception("Test Failed")
 
 print(f"---Test 4--- Frontend Testing")
@@ -181,21 +174,8 @@ driver.quit()
 # EXTRA - run a delete to clean up after testing
 # and close DB cursor and connection
 # therefore we can run test again and again
-# TODO could better control db_cursor to check it was setup correctly before running
-try:
-    print(f'Cleaning up TEST data - Deleting user_id [{test_user_id}]')
-    row_count = db_cursor.execute(
-        f"Delete from {globals.DB_SCHEMA_NAME}.users where user_id = {test_user_id}")
-    # row_count shows the number of rows effected.
-    print(f'row_count is [{row_count}]')
-    if row_count != 1:
-        print(f"Error when deleting user_id[{test_user_id}]")
-    else:
-        print(f"Cleaned up - Deleted user_id [{test_user_id}]")
-
-    db_cursor.close()
-    db_connection.close()
-    print(f"Database connection closed")
-except pymysql.Error as e:
-    print(e)
-    print(f"SQL Error when deleting user_id[{test_user_id}]")
+print(f'Cleaning up TEST data - Deleting user_id [{test_user_id}]')
+if db_connector.delete_user(test_user_id):
+    print(f"Cleaned up - Deleted user_id [{test_user_id}]")
+else:
+    print(f"Error when deleting user_id[{test_user_id}]")

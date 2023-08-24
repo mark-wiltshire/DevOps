@@ -10,6 +10,10 @@ pipeline {
         email_message = "ERROR Running ${env.JOB_NAME}  Build ${env.BUILD_ID} on ${env.JENKINS_URL}\n\n Look at the job here ${env.BUILD_URL}\n\n"
         cmb_test_user_id = 22
         cmb_test_user_name = "Mark"
+        db_host = "sql8.freesqldatabase.com"
+        db_port = 3306
+        db_user = "sql8640267"
+        db_password = "FkJQptHWtm"
     }
     stages {
         stage('Pull Code') {
@@ -28,11 +32,11 @@ pipeline {
                 script {
                     try {
                         if (checkOs() == 'Windows') {
-                            bat 'start/min python rest_app.py'
+                            bat 'start/min python rest_app.py ${db_host} ${db_port} ${db_user} ${db_password}'
                         } else {
                             //sh 'nohup python rest_app.py &'
                             //sh 'nohup python3 rest_app.py &'
-                            sh 'nohup ${python_run_file} rest_app.py &'
+                            sh 'nohup ${python_run_file} rest_app.py ${db_host} ${db_port} ${db_user} ${db_password} &'
                         }
                     } catch (Exception e) {
                         echo 'Exception Running Python rest_app.py!'
@@ -47,9 +51,9 @@ pipeline {
                 script {
                     try {
                         if (checkOs() == 'Windows') {
-                            bat 'start/min python web_app.py'
+                            bat 'start/min python web_app.py ${db_host} ${db_port} ${db_user} ${db_password}'
                         } else {
-                            sh 'nohup ${python_run_file} web_app.py &'
+                            sh 'nohup ${python_run_file} web_app.py ${db_host} ${db_port} ${db_user} ${db_password} &'
                         }
                     } catch (Exception e) {
                         echo 'Exception Running Python rest_app.py!'
@@ -64,9 +68,9 @@ pipeline {
                 script {
                     try {
                         if (checkOs() == 'Windows') {
-                            bat 'python backend_testing.py'
+                            bat 'python backend_testing.py ${db_host} ${db_port} ${db_user} ${db_password}'
                         } else {
-                            sh '${python_run_file} backend_testing.py'
+                            sh '${python_run_file} backend_testing.py ${db_host} ${db_port} ${db_user} ${db_password}'
                         }
                     } catch (Exception e) {
                         echo 'Exception Running Python backend_testing.py!'
@@ -81,9 +85,9 @@ pipeline {
                 script {
                     try {
                         if (checkOs() == 'Windows') {
-                            bat 'python frontend_testing.py'
+                            bat 'python frontend_testing.py ${db_host} ${db_port} ${db_user} ${db_password}'
                         } else {
-                            sh '${python_run_file} frontend_testing.py'
+                            sh '${python_run_file} frontend_testing.py ${db_host} ${db_port} ${db_user} ${db_password}'
                         }
                     } catch (Exception e) {
                         echo 'Exception Running Python frontend_testing.py!'
@@ -99,7 +103,7 @@ pipeline {
                 script {
                     try {
                         if (checkOs() == 'Windows') {
-                            bat 'python combined_testing.py ${cmb_test_user_id} ${cmb_test_user_name}'
+                            bat 'python combined_testing.py ${db_host} ${db_port} ${db_user} ${db_password} ${cmb_test_user_id} ${cmb_test_user_name}'
                         } else {
                             sh '${python_run_file} combined_testing.py ${cmb_test_user_id} ${cmb_test_user_name}'
                         }
