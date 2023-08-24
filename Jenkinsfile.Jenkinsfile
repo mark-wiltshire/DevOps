@@ -4,18 +4,16 @@ pipeline {
         buildDiscarder(logRotator(numToKeepStr: '20', daysToKeepStr: '5'))
     }
     environment {
-        //where python runs in PyCharm so I get the environment
-        //would need to change this for other users
         python_run_file = '/Users/markwiltshire/PycharmProjects/DevOps/venv/bin/python'
         email_message = "ERROR Running ${env.JOB_NAME}  Build ${env.BUILD_ID} on ${env.JENKINS_URL}\n\n Look at the job here ${env.BUILD_URL}\n\n"
+        // combined testing passed test parameters
         cmb_test_user_id = 22
         cmb_test_user_name = "Mark"
+        // DB Hosting settings
         db_host = "sql8.freesqldatabase.com"
         db_port = 3306
-
-        //credentials in Jenkins
+        // MySQL Credentials in Jenkins
         MYSQL_CREDS     = credentials('mysql')
-
     }
     stages {
         stage('Pull Code') {
