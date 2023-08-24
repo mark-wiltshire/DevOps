@@ -19,7 +19,7 @@ clean_environment.py - will stop web_app.py and rest_app.py servers in testing
 Extras
 1. Send email on failure - DONE
 2. Parameterized Build - TODO
-3. sys.argvs - IN PROGRESS
+3. sys.argvs - DONE
 4. Route Error Handling - DONE
 
 
