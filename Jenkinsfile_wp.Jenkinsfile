@@ -115,7 +115,7 @@ pipeline {
         stage('Run Combined Testing') {
             when {
                 expression {
-                   return testing == 3
+                   return params.testing.toInteger() == 3
                 }
             }
             steps {
