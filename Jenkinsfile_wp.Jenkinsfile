@@ -26,9 +26,6 @@ pipeline {
             steps {
                 echo "Running ${env.JOB_NAME}  Build ${env.BUILD_ID} on ${env.JENKINS_URL} parameters - testing ${params.testing}"
                 echo 'Pulling Code'
-                script {
-                    properties([pipelineTriggers([pollSCM('30 * * * *')])])
-                }
                 git 'https://github.com/mark-wiltshire/DevOps.git'
             }
         }
