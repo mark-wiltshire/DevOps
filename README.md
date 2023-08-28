@@ -9,19 +9,21 @@ Contains all code for PyCharm Project
 
 ### Creating CI Pipeline for a Python Project
 
-Completed first pass of Part 2 of project.
-TODO - clean_environment.py not Running
+Completed Part 2 of project with all Extras
 
-Now have build Jenkinsfiles - which will checkout, runs apps and tests build in Part 1
+Now have 2 build files
+1. Jenkinsfile.Jenkinsfile - which will checkout, runs apps and tests build in Part 1
+2. Jenkinsfile_wp.Jenkinsfile - which will checkout, ask for parameter and test based on parameter
+
+Additional files this project:
 clean_environment.py - will stop web_app.py and rest_app.py servers in testing
-/templates/404.html - 404 page
+/templates/404.html - 404 error page
 
 Extras
 1. Send email on failure - DONE
-2. Parameterized Build - TODO
+2. Parameterized Build - DONE
 3. sys.argvs - DONE
 4. Route Error Handling - DONE
-
 
 
 ## Part 1
