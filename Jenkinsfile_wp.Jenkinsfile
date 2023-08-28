@@ -24,7 +24,7 @@ pipeline {
     stages {
         stage('Pull Code') {
             steps {
-                echo "Running ${env.JOB_NAME}  Build ${env.BUILD_ID} on ${env.JENKINS_URL}"
+                echo "Running ${env.JOB_NAME}  Build ${env.BUILD_ID} on ${env.JENKINS_URL} parameters - testing ${params.testing}"
                 echo 'Pulling Code'
                 script {
                     properties([pipelineTriggers([pollSCM('30 * * * *')])])
@@ -71,7 +71,7 @@ pipeline {
         stage('Run Frontend Testing') {
             when {
                 expression {
-                   return testing == 1
+                   return params.testing.toInteger() == 1
                 }
             }
             steps {
@@ -93,7 +93,7 @@ pipeline {
         stage('Run Backend Testing') {
             when {
                 expression {
-                   return testing == 2
+                   return params.testing.toInteger() == 2
                 }
             }
             steps {
