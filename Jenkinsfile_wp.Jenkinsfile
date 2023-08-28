@@ -7,7 +7,7 @@ pipeline {
         // choice for which testing is carried out.
         // could use active choices - using jenkins plugin - https://plugins.jenkins.io/uno-choice/
         // see more here - https://devopscube.com/declarative-pipeline-parameters/
-        choice(name: 'testing', defaultValue: 3, choices: [1, 2, 3], description: 'What testing should be done? - 1 = frontend, 2 = backend, 3 [default] = combined')
+        choice(name: 'testing', choices: [3, 2, 1], description: 'What testing should be done? - 1 = frontend, 2 = backend, 3 [default] = combined')
     }
     environment {
         python_run_file = '/Users/markwiltshire/PycharmProjects/DevOps/venv/bin/python'
