@@ -32,7 +32,7 @@ _cursor = None
 _db_schema = ""  # global for use in other methods - set in get_connection
 
 
-# TODO - should really store the password securely
+# parameters passed from Jenkins
 def get_connection(db_host, db_port, db_user, db_password):
     """
     Will create or return a connection to the Database
@@ -61,8 +61,6 @@ def get_connection(db_host, db_port, db_user, db_password):
 def init():
     """
     initialises the database - by creating the table users AND config - if they don't exist
-
-    Also calls globals.init() to initialise globals from config DB
 
     :return: False - on error or table exists - True - when table created
     """
