@@ -8,4 +8,4 @@ COPY globals.py /app
 COPY requirements.txt /app
 RUN pip install -r /app/requirements.txt
 EXPOSE 5000
-CMD python rest_app.py
+CMD python rest_app.py sql8.freesqldatabase.com 3306 sql8640267 FkJQptHWtm

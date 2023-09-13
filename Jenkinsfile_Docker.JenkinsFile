@@ -1,0 +1,199 @@
+//
+//DevOps Project DOCKER Pipeline with Parameters
+//
+pipeline {
+    agent any
+    options {
+        buildDiscarder(logRotator(numToKeepStr: '20', daysToKeepStr: '5'))
+    }
+    environment {
+        python_run_file = '/Users/markwiltshire/PycharmProjects/DevOps/venv/bin/python'
+        email_message = "ERROR Running ${env.JOB_NAME}  Build ${env.BUILD_ID} on ${env.JENKINS_URL}\n\n Look at the job here ${env.BUILD_URL}\n\n"
+        // combined testing passed test parameters
+        cmb_test_user_id = 22
+        cmb_test_user_name = "Mark"
+        // DB Hosting settings
+        db_host = "sql8.freesqldatabase.com"
+        db_port = 3306
+        // MySQL Credentials in Jenkins
+        MYSQL_CREDS     = credentials('mysql')
+        docker_hub_user = "markjwiltshire"
+        docker_image_name = "rest_app"
+    }
+    stages {
+        stage('Pull Code') {
+            steps {
+                echo "Running ${env.JOB_NAME}  Build ${env.BUILD_ID} on ${env.JENKINS_URL} parameters - testing ${params.testing}"
+                echo 'Pulling Code'
+                git 'https://github.com/mark-wiltshire/DevOps.git'
+            }
+        }
+        stage('Run Backend Server') {
+            steps {
+                echo 'Running Backend Server'
+                script {
+                    try {
+                        if (checkOs() == 'Windows') {
+                            bat 'start/min python rest_app.py $db_host $db_port $MYSQL_CREDS_USR $MYSQL_CREDS_PSW'
+                        } else {
+                            //sh 'nohup python rest_app.py &'
+                            //sh 'nohup python3 rest_app.py &'
+                            sh 'nohup ${python_run_file} rest_app.py $db_host $db_port $MYSQL_CREDS_USR $MYSQL_CREDS_PSW &'
+                        }
+                    } catch (Exception e) {
+                        echo 'Exception Running Python rest_app.py!'
+                        error('Aborting the build')
+                    }
+                }
+            }
+        }
+        stage('Run Backend Testing') {
+            steps {
+                echo 'Running Backend Testing'
+                script {
+                    try {
+                        if (checkOs() == 'Windows') {
+                            bat 'python docker_backend_testing.py $db_host $db_port $MYSQL_CREDS_USR $MYSQL_CREDS_PSW'
+                        } else {
+                            sh '${python_run_file} docker_backend_testing.py $db_host $db_port $MYSQL_CREDS_USR $MYSQL_CREDS_PSW'
+                        }
+                    } catch (Exception e) {
+                        echo 'Exception Running Python backend_testing.py!'
+                        error('Aborting the build')
+                    }
+                }
+            }
+        }
+        stage('Run Backend Testing') {
+            steps {
+                echo 'Running Backend Testing'
+                script {
+                    try {
+                        if (checkOs() == 'Windows') {
+                            bat 'python docker_backend_testing.py $db_host $db_port $MYSQL_CREDS_USR $MYSQL_CREDS_PSW'
+                        } else {
+                            sh '${python_run_file} docker_backend_testing.py $db_host $db_port $MYSQL_CREDS_USR $MYSQL_CREDS_PSW'
+                        }
+                    } catch (Exception e) {
+                        echo 'Exception Running Python backend_testing.py!'
+                        error('Aborting the build')
+                    }
+                }
+            }
+        }
+        stage('Run Clean Up') {
+            steps {
+                echo 'Running Cleanup'
+                script {
+                    try {
+                        if (checkOs() == 'Windows') {
+                            bat 'python clean_environment.py'
+                        } else {
+                            sh '${python_run_file} clean_environment.py'
+                        }
+                    } catch (Exception e) {
+                        echo 'Exception Running Python clean_environment.py!'
+                        error('Aborting the build')
+                    }
+                }
+            }
+        }
+        stage('Build Docker Image') {
+            steps {
+                echo 'Running Build Docker Image'
+                script {
+                    try {
+                        if (checkOs() == 'Windows') {
+                            bat 'docker build -t $docker_image_name .'
+                        } else {
+                            sh 'docker build -t $docker_image_name .'
+                        }
+                    } catch (Exception e) {
+                        echo 'Exception Running Docker Build!'
+                        error('Aborting the build')
+                    }
+            }
+        }
+        stage('Tag & Push Docker Image') {
+            steps {
+                echo 'Running Tag & Push Docker Image'
+                script {
+                    try {
+                        if (checkOs() == 'Windows') {
+                            bat 'docker tag $docker_image_name $docker_hub_user/$docker_image_name'
+                            bat 'docker push -t $docker_image_name .'
+                        } else {
+                            sh 'docker tag $docker_image_name $docker_hub_user/$docker_image_name'
+                            sh 'docker build -t $docker_image_name .'
+                        }
+                    } catch (Exception e) {
+                        echo 'Exception Running Docker Tag & Push!'
+                        error('Aborting the build')
+                    }
+            }
+        }
+        stage('Set compose Image Version') {
+            steps {
+                echo 'Set compose Image Version'
+                echo IMAGE_TAG=${BUILD_NUMBER} > .env
+            }
+        }
+        stage('Docker-Compose') {
+            steps {
+                echo 'Docker-Compose'
+            }
+        }
+        stage('Wait for Docker-Compose') {
+            steps {
+                echo 'Wait for Docker-Compose'
+            }
+        }
+        stage('Docker-Compose test') {
+            steps {
+                echo 'Docker-Compose test'
+            }
+        }
+    }
+    post {
+        always {
+            //we always want to clean up even if the build failed
+            echo 'Running Cleanup'
+            //*TODO*
+            // 1. Docker-compose down
+            // 2. docker delete image
+            // can get image id from - docker images | grep rest_app | awk '{print $3}'
+            script {
+                try {
+                    if (checkOs() == 'Windows') {
+                        bat 'docker-compose down'
+                        bat 'docker rmi $docker_image_name'
+                    } else {
+                        sh 'docker-compose down'
+                        sh 'docker rmi $docker_image_name'
+                    }
+                } catch (Exception e) {
+                    echo 'Exception Running Cleanup!'
+                }
+            }
+        }
+        failure {
+            echo "Sent email with message about error for ${env.JOB_NAME}  Build ${env.BUILD_ID} on ${env.JENKINS_URL}"
+            emailext body: email_message, recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']], subject: "FAILED: Jenkins ${env.JOB_NAME} Build ${env.BUILD_NUMBER}"
+        }
+    }
+}
+
+def checkOs(){
+    if (isUnix()) {
+        def uname = sh script: 'uname', returnStdout: true
+        if (uname.startsWith("Darwin")) {
+            return "Macos"
+        }
+        else {
+            return "Linux"
+        }
+    }
+    else {
+        return "Windows"
+    }
+}

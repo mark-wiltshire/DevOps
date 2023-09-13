@@ -1,0 +1,6 @@
+###### Requirements without Version Specifiers ######
+flask
+requests
+pymysql
+
+###### Requirements with Version Specifiers ######
