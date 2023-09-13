@@ -1,6 +1,8 @@
 """
 wep_app.py
 
+DEPRECATED - was used for original Local Jenkins run NOT in Docker Version
+
 Provides Web access to the project
 
 uses the db_connector.py module for the database access

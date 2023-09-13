@@ -4,6 +4,8 @@ frontend_testing.py
 Front End testing the web_app.py MUST be running
 
 Hardcoded the Chrome and Chromedriver locations
+
+DEPRECATED - was used for original Local Jenkins run NOT in Docker Version
 """
 import sys
 

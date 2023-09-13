@@ -1,6 +1,8 @@
 """
 Web, REST API and Database testing
 
+DEPRECATED - was used for original Local Jenkins run NOT in Docker Version
+
 BOTH web_app.py AND res_app.py must be running
 
 Updated so that if user_id read from user input is already taken
