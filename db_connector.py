@@ -97,7 +97,7 @@ def init():
 
             print(f'Inserting CONFIG Table')
             prepared_config_sql = """INSERT into """ + _db_schema + """.config (`key`, `value`) VALUES (%s, %s)"""
-            _cursor.execute(prepared_config_sql, (globals.KEY_API_GATEWAY, '127.0.0.1:5000/users'))
+            _cursor.execute(prepared_config_sql, (globals.KEY_API_GATEWAY, '0.0.0.0:5000/users'))
             _cursor.execute(prepared_config_sql, (globals.KEY_TEST_BROWSER, 'chrome'))
             _cursor.execute(prepared_config_sql, (globals.KEY_TEST_USER_NAME, 'Bob'))
             _cursor.execute(prepared_config_sql, (globals.KEY_TEST_USER_ID, '22'))
