@@ -113,11 +113,11 @@ pipeline {
                 script {
                     try {
                         if (checkOs() == 'Windows') {
-                            bat 'docker tag $docker_image_name $MYDOCKER_CREDS_USR/$docker_image_name:$base_version${env.BUILD_NUMBER}'
+                            bat 'docker tag $docker_image_name $MYDOCKER_CREDS_USR/$docker_image_name:$base_version$BUILD_NUMBER'
                             bat 'echo $MYDOCKER_CREDS_PSW | docker login -u $MYDOCKER_CREDS_USR --password-stdin'
                             bat 'docker push $MYDOCKER_CREDS_USR/$docker_image_name'
                         } else {
-                            sh 'docker tag $docker_image_name $MYDOCKER_CREDS_USR/$docker_image_name:$base_version${env.BUILD_NUMBER}'
+                            sh 'docker tag $docker_image_name $MYDOCKER_CREDS_USR/$docker_image_name:$base_version$BUILD_NUMBER'
                             sh 'echo $MYDOCKER_CREDS_PSW | docker login -u $MYDOCKER_CREDS_USR --password-stdin'
                             sh 'docker push $MYDOCKER_CREDS_USR/$docker_image_name'
                         }
