@@ -9,6 +9,14 @@ Contains all code for PyCharm Project for the Global Dev Experts - DevOps course
 
 1. NEW Jenkins build file  - will checkout, test, build & Push Docker Image and Test on Docker
 
+Notes
+- added curl to docker alpine image so docker-compose healthcheck will work
+- You can see healthcheck results using command - docker inspect --format "{{json .State.Health }}" <container name>
+- added Jenkins variable base_version - to tag hub.docker.com images with versioning
+- COULD expand this to use git tags
+- 
+
+
 New Files
 - Jenkins_Docker.Jenkinsfile -
 - Dockerfile - to run the docker container running the rest_app.py

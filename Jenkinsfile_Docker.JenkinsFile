@@ -115,11 +115,11 @@ pipeline {
                         if (checkOs() == 'Windows') {
                             bat 'docker tag $docker_image_name $MYDOCKER_CREDS_USR/$docker_image_name:$base_version$BUILD_NUMBER'
                             bat 'echo $MYDOCKER_CREDS_PSW | docker login -u $MYDOCKER_CREDS_USR --password-stdin'
-                            bat 'docker push $MYDOCKER_CREDS_USR/$docker_image_name'
+                            bat 'docker push $MYDOCKER_CREDS_USR/$docker_image_name:$base_version$BUILD_NUMBER'
                         } else {
                             sh 'docker tag $docker_image_name $MYDOCKER_CREDS_USR/$docker_image_name:$base_version$BUILD_NUMBER'
                             sh 'echo $MYDOCKER_CREDS_PSW | docker login -u $MYDOCKER_CREDS_USR --password-stdin'
-                            sh 'docker push $MYDOCKER_CREDS_USR/$docker_image_name'
+                            sh 'docker push $MYDOCKER_CREDS_USR/$docker_image_name:$base_version$BUILD_NUMBER'
                         }
                     } catch (Exception e) {
                         echo 'Exception Running Docker Tag, Login & Push!'
@@ -217,12 +217,12 @@ pipeline {
                         bat 'python clean_environment.py'
                         bat 'docker-compose down'
                         bat 'docker rmi $docker_image_name'
-                        bat 'docker rmi $MYDOCKER_CREDS_USR/$docker_image_name'
+                        bat 'docker rmi $MYDOCKER_CREDS_USR/$docker_image_name:$base_version$BUILD_NUMBER'
                     } else {
                         sh '${python_run_file} clean_environment.py'
                         sh 'docker-compose down'
                         sh 'docker rmi $docker_image_name'
-                        sh 'docker rmi $MYDOCKER_CREDS_USR/$docker_image_name'
+                        sh 'docker rmi $MYDOCKER_CREDS_USR/$docker_image_name:$base_version$BUILD_NUMBER'
                     }
                 } catch (Exception e) {
                     echo 'Exception Running Cleanup! {e}'
