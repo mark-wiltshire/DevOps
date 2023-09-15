@@ -8,7 +8,7 @@ pipeline {
     }
     environment {
         python_run_file = '/Users/markwiltshire/PycharmProjects/DevOps/venv/bin/python'
-        email_message = "ERROR Running ${env.JOB_NAME}  Build ${env.BUILD_ID} on ${env.JENKINS_URL}\n\n Look at the job here ${env.BUILD_URL}\n\n"
+        email_message = "ERROR Running ${env.JOB_NAME}  Build ${env.BUILD_NUMBER} on ${env.JENKINS_URL}\n\n Look at the job here ${env.BUILD_URL}\n\n"
         // combined testing passed test parameters
         cmb_test_user_id = 22
         cmb_test_user_name = "Mark"
@@ -20,11 +20,14 @@ pipeline {
         // Docker Credentials in Jenkins
         MYDOCKER_CREDS  = credentials('Docker')
         docker_image_name = "devops-rest"
+        // Versioning - combined with env.BUILD_NUMBER to tag docker push commands
+        // SHOULD really do this from git tags
+        base_version = "version1.0."
     }
     stages {
         stage('Pull Code') {
             steps {
-                echo "Running ${env.JOB_NAME}  Build ${env.BUILD_ID} on ${env.JENKINS_URL} parameters - testing ${params.testing}"
+                echo "Running ${env.JOB_NAME}  Build ${env.BUILD_NUMBER} on ${env.JENKINS_URL} parameters - testing ${params.testing}"
                 echo 'Pulling Code'
                 script {
                     properties([pipelineTriggers([pollSCM('30 * * * *')])])
@@ -110,11 +113,11 @@ pipeline {
                 script {
                     try {
                         if (checkOs() == 'Windows') {
-                            bat 'docker tag $docker_image_name $MYDOCKER_CREDS_USR/$docker_image_name'
+                            bat 'docker tag $docker_image_name $MYDOCKER_CREDS_USR/$docker_image_name:$base_version${env.BUILD_NUMBER}'
                             bat 'echo $MYDOCKER_CREDS_PSW | docker login -u $MYDOCKER_CREDS_USR --password-stdin'
                             bat 'docker push $MYDOCKER_CREDS_USR/$docker_image_name'
                         } else {
-                            sh 'docker tag $docker_image_name $MYDOCKER_CREDS_USR/$docker_image_name'
+                            sh 'docker tag $docker_image_name $MYDOCKER_CREDS_USR/$docker_image_name:$base_version${env.BUILD_NUMBER}'
                             sh 'echo $MYDOCKER_CREDS_PSW | docker login -u $MYDOCKER_CREDS_USR --password-stdin'
                             sh 'docker push $MYDOCKER_CREDS_USR/$docker_image_name'
                         }
@@ -227,7 +230,7 @@ pipeline {
             }
         }
         failure {
-            echo "Sent email with message about error for ${env.JOB_NAME}  Build ${env.BUILD_ID} on ${env.JENKINS_URL}"
+            echo "Sent email with message about error for ${env.JOB_NAME}  Build ${env.BUILD_NUMBER} on ${env.JENKINS_URL}"
             emailext body: email_message, recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']], subject: "FAILED: Jenkins ${env.JOB_NAME} Build ${env.BUILD_NUMBER}"
         }
     }
