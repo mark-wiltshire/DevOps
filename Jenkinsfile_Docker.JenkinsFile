@@ -18,7 +18,7 @@ pipeline {
         // MySQL Credentials in Jenkins
         MYSQL_CREDS     = credentials('mysql')
         docker_hub_user = "markjwiltshire"
-        docker_image_name = "rest_app"
+        docker_image_name = "devops-rest"
     }
     stages {
         stage('Pull Code') {
@@ -53,26 +53,9 @@ pipeline {
                 script {
                     try {
                         if (checkOs() == 'Windows') {
-                            bat 'python docker_backend_testing.py $db_host $db_port $MYSQL_CREDS_USR $MYSQL_CREDS_PSW'
+                            bat 'python backend_testing.py $db_host $db_port $MYSQL_CREDS_USR $MYSQL_CREDS_PSW'
                         } else {
-                            sh '${python_run_file} docker_backend_testing.py $db_host $db_port $MYSQL_CREDS_USR $MYSQL_CREDS_PSW'
-                        }
-                    } catch (Exception e) {
-                        echo 'Exception Running Python backend_testing.py!'
-                        error('Aborting the build')
-                    }
-                }
-            }
-        }
-        stage('Run Backend Testing') {
-            steps {
-                echo 'Running Backend Testing'
-                script {
-                    try {
-                        if (checkOs() == 'Windows') {
-                            bat 'python docker_backend_testing.py $db_host $db_port $MYSQL_CREDS_USR $MYSQL_CREDS_PSW'
-                        } else {
-                            sh '${python_run_file} docker_backend_testing.py $db_host $db_port $MYSQL_CREDS_USR $MYSQL_CREDS_PSW'
+                            sh '${python_run_file} backend_testing.py $db_host $db_port $MYSQL_CREDS_USR $MYSQL_CREDS_PSW'
                         }
                     } catch (Exception e) {
                         echo 'Exception Running Python backend_testing.py!'
@@ -112,6 +95,7 @@ pipeline {
                         echo 'Exception Running Docker Build!'
                         error('Aborting the build')
                     }
+                }
             }
         }
         stage('Tag & Push Docker Image') {
@@ -130,27 +114,52 @@ pipeline {
                         echo 'Exception Running Docker Tag & Push!'
                         error('Aborting the build')
                     }
+                }
             }
         }
-        stage('Set compose Image Version') {
+        stage('Set Environment variables') {
             steps {
-                echo 'Set compose Image Version'
+                echo 'Set Environment variables'
                 echo IMAGE_TAG=${BUILD_NUMBER} > .env
+                echo db_host=$db_host >> .env
+                echo db_port=$db_port >> .env
+                echo db_user=$MYSQL_CREDS_USR >> .env
+                echo db_pass=$MYSQL_CREDS_PSW >> .env
             }
         }
-        stage('Docker-Compose') {
+        stage('Docker-Compose up and wait') {
             steps {
-                echo 'Docker-Compose'
-            }
-        }
-        stage('Wait for Docker-Compose') {
-            steps {
-                echo 'Wait for Docker-Compose'
+                echo 'Docker-Compose up and wait'
+                // --wait implies -d so don't need it.
+                script {
+                    try {
+                        if (checkOs() == 'Windows') {
+                            bat 'docker-compose up --wait'
+                        } else {
+                            sh 'docker-compose up --wait'
+                        }
+                    } catch (Exception e) {
+                        echo 'Exception Running docker-compose up'
+                        error('Aborting the build')
+                    }
+                }
             }
         }
         stage('Docker-Compose test') {
             steps {
                 echo 'Docker-Compose test'
+                script {
+                    try {
+                        if (checkOs() == 'Windows') {
+                            bat 'python docker_backend_testing.py $db_host $db_port $MYSQL_CREDS_USR $MYSQL_CREDS_PSW'
+                        } else {
+                            sh '${python_run_file} docker_backend_testing.py $db_host $db_port $MYSQL_CREDS_USR $MYSQL_CREDS_PSW'
+                        }
+                    } catch (Exception e) {
+                        echo 'Exception Running Python backend_testing.py!'
+                        error('Aborting the build')
+                    }
+                }
             }
         }
     }

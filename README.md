@@ -3,7 +3,26 @@
 ### First Part Project for DevOps Course
 
 Mark Wiltshire
-Contains all code for PyCharm Project
+Contains all code for PyCharm Project for the Global Dev Experts - DevOps course
+
+## Part 3 - Docker
+
+1. NEW Jenkins build file  - will checkout, test, build & Push Docker Image and Test on Docker
+
+New Files
+- Jenkins_Docker.Jenkinsfile -
+- Dockerfile - to run the docker container running the rest_app.py
+- requirements.txt - contains python requirements for rest_app.py
+- docker-compose.yaml - docker compose to run the rest_app.py - see https://docs.docker.com/compose/reference/
+
+Extras - 
+
+a. Run MYSQL as another container - using compose - and change your rest_app code to use it - instead of remote DB
+
+No Longer used files (left here for learning / running previous options)
+- web_app.py
+- frontend_testing.py
+- combined_testing.py
 
 ## Part 2
 
