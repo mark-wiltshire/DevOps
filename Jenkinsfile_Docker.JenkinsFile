@@ -111,7 +111,7 @@ pipeline {
                             bat 'docker push -t $docker_image_name .'
                         } else {
                             sh 'docker tag $docker_image_name $docker_hub_user/$docker_image_name'
-                            sh 'docker build -t $docker_image_name .'
+                            sh 'docker push -t $docker_image_name .'
                         }
                     } catch (Exception e) {
                         echo 'Exception Running Docker Tag & Push!'
@@ -124,11 +124,24 @@ pipeline {
             steps {
                 echo 'Set Environment variables'
                 script {
-                    sh 'echo IMAGE_TAG=$BUILD_NUMBER > .env'
-                    sh 'echo db_host=$db_host >> .env'
-                    sh 'echo db_port=$db_port >> .env'
-                    sh 'echo db_user=$MYSQL_CREDS_USR >> .env'
-                    sh 'echo db_pass=$MYSQL_CREDS_PSW >> .env'
+                    try {
+                        if (checkOs() == 'Windows') {
+                            bat 'echo IMAGE_TAG=$BUILD_NUMBER > .env'
+                            bat 'echo db_host=$db_host >> .env'
+                            bat 'echo db_port=$db_port >> .env'
+                            bat 'echo db_user=$MYSQL_CREDS_USR >> .env'
+                            bat 'echo db_pass=$MYSQL_CREDS_PSW >> .env'
+                        } else {
+                            sh 'echo IMAGE_TAG=$BUILD_NUMBER > .env'
+                            sh 'echo db_host=$db_host >> .env'
+                            sh 'echo db_port=$db_port >> .env'
+                            sh 'echo db_user=$MYSQL_CREDS_USR >> .env'
+                            sh 'echo db_pass=$MYSQL_CREDS_PSW >> .env'
+                        }
+                    } catch (Exception e) {
+                        echo 'Exception Running Set Environment variables!'
+                        error('Aborting the build')
+                    }
                 }
             }
         }
