@@ -17,7 +17,8 @@ pipeline {
         db_port = 3306
         // MySQL Credentials in Jenkins
         MYSQL_CREDS     = credentials('mysql')
-        docker_hub_user = "markjwiltshire"
+        // Docker Credentials in Jenkins
+        MYDOCKER_CREDS  = credentials('Docker')
         docker_image_name = "devops-rest"
     }
     stages {
@@ -101,20 +102,24 @@ pipeline {
                 }
             }
         }
-        stage('Tag & Push Docker Image') {
+        stage('Tag, Login & Push Docker Image') {
             steps {
-                echo 'Running Tag & Push Docker Image'
+                echo 'Running Tag, Login & Push Docker Image'
+                // using https://docs.docker.com/docker-hub/access-tokens/ to login to docker hub
+                // hub login credentials setup in Jenkins
                 script {
                     try {
                         if (checkOs() == 'Windows') {
-                            bat 'docker tag $docker_image_name $docker_hub_user/$docker_image_name'
+                            bat 'docker tag $docker_image_name $MYDOCKER_CREDS_USR/$docker_image_name'
+                            bat 'echo $MYDOCKER_CREDS_PSW | docker login -u $MYDOCKER_CREDS_USR --password-stdin'
                             bat 'docker push $docker_image_name'
                         } else {
-                            sh 'docker tag $docker_image_name $docker_hub_user/$docker_image_name'
+                            sh 'docker tag $docker_image_name $MYDOCKER_CREDS_USR/$docker_image_name'
+                            sh 'echo $MYDOCKER_CREDS_PSW | docker login -u $MYDOCKER_CREDS_USR --password-stdin'
                             sh 'docker push $docker_image_name'
                         }
                     } catch (Exception e) {
-                        echo 'Exception Running Docker Tag & Push!'
+                        echo 'Exception Running Docker Tag, Login & Push!'
                         error('Aborting the build')
                     }
                 }
