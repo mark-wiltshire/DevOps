@@ -108,10 +108,10 @@ pipeline {
                     try {
                         if (checkOs() == 'Windows') {
                             bat 'docker tag $docker_image_name $docker_hub_user/$docker_image_name'
-                            bat 'docker push $docker_image_name .'
+                            bat 'docker push $docker_image_name'
                         } else {
                             sh 'docker tag $docker_image_name $docker_hub_user/$docker_image_name'
-                            sh 'docker push $docker_image_name .'
+                            sh 'docker push $docker_image_name'
                         }
                     } catch (Exception e) {
                         echo 'Exception Running Docker Tag & Push!'
