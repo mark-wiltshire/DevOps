@@ -120,11 +120,11 @@ pipeline {
         stage('Set Environment variables') {
             steps {
                 echo 'Set Environment variables'
-                echo IMAGE_TAG=${BUILD_NUMBER} > .env
-                echo db_host=$db_host >> .env
-                echo db_port=$db_port >> .env
-                echo db_user=$MYSQL_CREDS_USR >> .env
-                echo db_pass=$MYSQL_CREDS_PSW >> .env
+                echo "IMAGE_TAG=$BUILD_NUMBER" > .env
+                echo "db_host=$db_host" >> .env
+                echo "db_port=$db_port" >> .env
+                echo "db_user=$MYSQL_CREDS_USR" >> .env
+                echo "db_pass=$MYSQL_CREDS_PSW" >> .env
             }
         }
         stage('Docker-Compose up and wait') {
