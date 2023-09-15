@@ -14,7 +14,7 @@ Notes
 - You can see healthcheck results using command - docker inspect --format "{{json .State.Health }}" <container name>
 - added Jenkins variable base_version - to tag hub.docker.com images with versioning
 - COULD expand this to use git tags
-- 
+- Pushes 2 tags to hub.docker.com - latest and version number
 
 
 New Files
