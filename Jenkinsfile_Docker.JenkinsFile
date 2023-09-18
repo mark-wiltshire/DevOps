@@ -137,13 +137,13 @@ pipeline {
                 script {
                     try {
                         if (checkOs() == 'Windows') {
-                            bat 'echo IMAGE_TAG=$BUILD_NUMBER > .env'
+                            bat 'echo IMAGE_TAG=$base_version$BUILD_NUMBER > .env'
                             bat 'echo db_host=$db_host >> .env'
                             bat 'echo db_port=$db_port >> .env'
                             bat 'echo db_user=$MYSQL_CREDS_USR >> .env'
                             bat 'echo db_pass=$MYSQL_CREDS_PSW >> .env'
                         } else {
-                            sh 'echo IMAGE_TAG=$BUILD_NUMBER > .env'
+                            sh 'echo IMAGE_TAG=$base_version$BUILD_NUMBER > .env'
                             sh 'echo db_host=$db_host >> .env'
                             sh 'echo db_port=$db_port >> .env'
                             sh 'echo db_user=$MYSQL_CREDS_USR >> .env'

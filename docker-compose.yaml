@@ -3,7 +3,7 @@ services:
   rest:
     build: .
     container_name: devops-rest
-    image: devops-rest
+    image: devops-rest:${IMAGE_TAG}
     environment:
         db_host: ${db_host}
         db_port: ${db_port}
@@ -14,7 +14,6 @@ services:
     # Healthcheck to check server is up
     # see healthcheck output using - docker inspect --format "{{json .State.Health }}" <container name>
     healthcheck:
-      #test: ["CMD", "curl", "-f", "http://localhost:5000/users/1"]
       test: curl --fail http://localhost:5000/users/1 || exit 1
       interval: 10s
       timeout: 5s
