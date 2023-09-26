@@ -141,13 +141,12 @@ pipeline {
                             bat 'echo db_host=$db_host >> .env'
                             bat 'echo db_port=$db_port >> .env'
                             bat 'echo db_user=$MYSQL_CREDS_USR >> .env'
-                            bat 'echo db_pass=$MYSQL_CREDS_PSW >> .env'
                         } else {
                             sh 'echo IMAGE_TAG=$base_version$BUILD_NUMBER > .env'
                             sh 'echo db_host=$db_host >> .env'
                             sh 'echo db_port=$db_port >> .env'
                             sh 'echo db_user=$MYSQL_CREDS_USR >> .env'
-                            sh 'echo db_pass=$MYSQL_CREDS_PSW >> .env'
+                            sh 'echo $MYSQL_CREDS_PSW > db_password.txt'
                         }
                     } catch (Exception e) {
                         echo 'Exception Running Set Environment variables!'
@@ -200,21 +199,12 @@ pipeline {
             // 1. run cleanenvironment
             // 1. Docker-compose down
             // 2. docker delete image
+            // 3. .env file
             // can get image id from - docker images | grep rest_app | awk '{print $3}'
-//we always want to clean up even if the build failed
+            //we always want to clean up even if the build failed
             echo 'Running Cleanup'
             script {
-                try {
-                    if (checkOs() == 'Windows') {
-                        bat 'python clean_environment.py'
-                    } else {
-                        sh '${python_run_file} clean_environment.py'
-                    }
-                } catch (Exception e) {
-                    echo 'Exception Running Python clean_environment.py!'
-                }
-            }
-            script {
+                // clean up environment - remove docker container, images and .env file.
                 try {
                     if (checkOs() == 'Windows') {
                         bat 'python clean_environment.py'
@@ -222,12 +212,16 @@ pipeline {
                         bat 'docker rmi $docker_image_name'
                         bat 'docker rmi $MYDOCKER_CREDS_USR/$docker_image_name:latest'
                         bat 'docker rmi $MYDOCKER_CREDS_USR/$docker_image_name:$base_version$BUILD_NUMBER'
+                        bat 'del .env'
+                        bat 'del db_password.txt'
                     } else {
                         sh '${python_run_file} clean_environment.py'
                         sh 'docker-compose down'
                         sh 'docker rmi $docker_image_name'
                         sh 'docker rmi $MYDOCKER_CREDS_USR/$docker_image_name:latest'
                         sh 'docker rmi $MYDOCKER_CREDS_USR/$docker_image_name:$base_version$BUILD_NUMBER'
+                        sh 'rm .env'
+                        sh 'rm db_password.txt'
                     }
                 } catch (Exception e) {
                     echo 'Exception Running Cleanup! {e}'

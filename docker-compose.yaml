@@ -8,7 +8,9 @@ services:
         db_host: ${db_host}
         db_port: ${db_port}
         db_user: ${db_user}
-        db_pass: ${db_pass}
+        db_pass: /run/secrets/db_password
+    secrets:
+      - db_password
     ports:
       - "5000:5000"
     # Healthcheck to check server is up
@@ -19,3 +21,6 @@ services:
       timeout: 5s
       retries: 5
       start_period: 10s
+secrets:
+  db_password:
+    file: ./db_password.txt

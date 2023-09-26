@@ -9,6 +9,12 @@ Contains all code for PyCharm Project for the Global Dev Experts - DevOps course
 
 1. NEW Jenkins build file  - will checkout, test, build & Push Docker Image and Test on Docker
 
+New Files
+- Jenkins_Docker.Jenkinsfile - New Jenkins Build Pipeline
+- Dockerfile - to run the docker container running the rest_app.py
+- requirements.txt - contains python requirements for rest_app.py
+- docker-compose.yaml - docker compose to run the rest_app.py - see https://docs.docker.com/compose/reference/
+
 Notes
 - added curl to docker alpine image so docker-compose healthcheck will work
 - You can see healthcheck results using command - docker inspect --format "{{json .State.Health }}" <container name>
@@ -17,14 +23,7 @@ Notes
 - Pushes 2 tags to hub.docker.com - latest and version number
 
 
-New Files
-- Jenkins_Docker.Jenkinsfile -
-- Dockerfile - to run the docker container running the rest_app.py
-- requirements.txt - contains python requirements for rest_app.py
-- docker-compose.yaml - docker compose to run the rest_app.py - see https://docs.docker.com/compose/reference/
-
-Extras - 
-
+Extras -
 a. Run MYSQL as another container - using compose - and change your rest_app code to use it - instead of remote DB
 
 No Longer used files (left here for learning / running previous options)
