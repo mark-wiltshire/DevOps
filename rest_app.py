@@ -55,6 +55,10 @@ if db_pass is None:
         raise Exception("No Password Secret File Found")
 
 # Open and initialise DB Connection
+print(f"db_host [{args.db_host}]")
+print(f"db_port [{args.db_port}]")
+print(f"db_user [{args.db_user}]")
+print(f"db_pass [{db_pass}]")
 db_connector.get_connection(args.db_host, args.db_port, args.db_user, db_pass)
 db_connector.init()
 
