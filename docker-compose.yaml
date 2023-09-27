@@ -1,9 +1,38 @@
 version: '3.7'
 services:
+  db:
+    image: mysql:8.0.33
+    # NOTE: use of "mysql_native_password" is not recommended: https://dev.mysql.com/doc/refman/8.0/en/upgrading-from-previous-series.html#upgrade-caching-sha2-password
+    # (this is just an example, not intended to be a production configuration)
+    # My OLD Mac MySQL client only support native passwords
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_DATABASE: ${db_user}
+      # So you don't have to use root, but you can if you like
+      MYSQL_USER: ${db_user}
+      # You can use whatever password you like
+      MYSQL_PASSWORD: /run/secrets/db_password
+      # Password for root access
+      MYSQL_ROOT_PASSWORD: /run/secrets/root_db_password
+    secrets:
+      - db_password
+      - root_db_password
+    ports:
+      # <Port exposed> : <MySQL Port running inside container>
+      - '${db_port}:${db_port}'
+    expose:
+      # Opens port 3306 on the container
+      - '${db_port}'
+      # Where our data will be persisted
+    volumes:
+      - my-db:/var/lib/mysql
   rest:
     build: .
     container_name: devops-rest
     image: devops-rest:${IMAGE_TAG}
+    depends_on:
+      - db
     environment:
         db_host: ${db_host}
         db_port: ${db_port}
@@ -24,3 +53,8 @@ services:
 secrets:
   db_password:
     file: ./db_password.txt
+  root_db_password:
+    file: ./root_db_password.txt
+# Names our volume
+volumes:
+  my-db:

@@ -24,7 +24,8 @@ Notes
 - uses docker secrets to pass password
 
 Extras -
-a. Run MYSQL as another container - using compose - and change your rest_app code to use it - instead of remote DB
+- DONE Run MYSQL as another container - using compose - and change your rest_app code to use it - instead of remote DB
+- added new Jenkins Credentials for this Docker MySQL Container
 
 No Longer used files (left here for learning / running previous options)
 - web_app.py
