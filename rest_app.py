@@ -50,7 +50,6 @@ if db_pass is None:
     try:
         with open('/run/secrets/db_password', 'r') as file:
             db_pass = file.read().strip()
-            print(db_pass)
     except Exception as e:
         print(e)
         raise Exception("No Password Secret File Found")
