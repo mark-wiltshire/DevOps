@@ -19,7 +19,7 @@ pipeline {
         // Remote MySQL Credentials in Jenkins
         REMOTE_MYSQL_CREDS     = credentials('remote-mysql')
         // Docker Local DB Hosting settings
-        local_db_host = "localhost"
+        local_db_host = "db"
         local_db_port = 3306
         // Docker Container Local MySQL Credentials in Jenkins
         DOCKER_MYSQL_CREDS     = credentials('docker-local-mysql')
