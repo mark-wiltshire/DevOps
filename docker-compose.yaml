@@ -63,3 +63,4 @@ secrets:
 # Names our volume
 volumes:
   my-db:
+    name: devops-db-data
