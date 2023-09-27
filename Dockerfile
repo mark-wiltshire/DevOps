@@ -15,4 +15,4 @@ RUN apk --no-cache add curl
 RUN apk update && apk upgrade
 RUN pip install -r /app/requirements.txt
 EXPOSE 5000
-CMD ["sh", "-c", "python rest_app.py $db_host $db_port $db_user $db_pass"]
+CMD ["sh", "-c", "python rest_app.py $db_host $db_port $db_user --db_pass $db_pass"]

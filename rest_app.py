@@ -40,11 +40,23 @@ parser = argparse.ArgumentParser(description="Run our Rest API")
 parser.add_argument("db_host", type=str, help="the DB host")
 parser.add_argument("db_port", type=int, help="the DB port")
 parser.add_argument("db_user", type=str, help="the DB username")
-parser.add_argument("db_password", type=str, help="the DB password")
+parser.add_argument("--db_pass", type=str, help="the DB password")
 args = parser.parse_args()
 
+# check if password is passed as argument / otherwise try and read from /run/secrets/db_password
+# as this is where it will be stored in a container docker secret
+db_pass = args.db_pass
+if db_pass is None:
+    try:
+        with open('/run/secrets/db_password', 'r') as file:
+            db_pass = file.read().strip()
+            print(db_pass)
+    except Exception as e:
+        print(e)
+        raise Exception("No Password Secret File Found")
+
 # Open and initialise DB Connection
-db_connector.get_connection(args.db_host, args.db_port, args.db_user, args.db_password)
+db_connector.get_connection(args.db_host, args.db_port, args.db_user, db_pass)
 db_connector.init()
 
 # initialise globals
