@@ -21,7 +21,7 @@ Notes
 - added Jenkins variable base_version - to tag hub.docker.com images with versioning
 - COULD expand this to use git tags
 - Pushes 2 tags to hub.docker.com - latest and version number
-
+- uses docker secrets to pass password
 
 Extras -
 a. Run MYSQL as another container - using compose - and change your rest_app code to use it - instead of remote DB

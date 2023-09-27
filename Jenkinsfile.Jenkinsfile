@@ -35,11 +35,11 @@ pipeline {
                 script {
                     try {
                         if (checkOs() == 'Windows') {
-                            bat 'start/min python rest_app.py $db_host $db_port $MYSQL_CREDS_USR $MYSQL_CREDS_PSW'
+                            bat 'start/min python rest_app.py $db_host $db_port $MYSQL_CREDS_USR --db_pass $MYSQL_CREDS_PSW'
                         } else {
                             //sh 'nohup python rest_app.py &'
                             //sh 'nohup python3 rest_app.py &'
-                            sh 'nohup ${python_run_file} rest_app.py $db_host $db_port $MYSQL_CREDS_USR $MYSQL_CREDS_PSW &'
+                            sh 'nohup ${python_run_file} rest_app.py $db_host $db_port $MYSQL_CREDS_USR --db_pass $MYSQL_CREDS_PSW &'
                         }
                     } catch (Exception e) {
                         echo 'Exception Running Python rest_app.py!'
@@ -59,7 +59,7 @@ pipeline {
                             sh 'nohup ${python_run_file} web_app.py $db_host $db_port $MYSQL_CREDS_USR $MYSQL_CREDS_PSW &'
                         }
                     } catch (Exception e) {
-                        echo 'Exception Running Python rest_app.py!'
+                        echo 'Exception Running Python web_app.py!'
                         error('Aborting the build')
                     }
                 }
