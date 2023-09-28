@@ -46,6 +46,8 @@ services:
         - db_password
     ports:
       - "5000:5000"
+    expose:
+      - "5000"
     # Healthcheck to check server is up
     # see healthcheck output using - docker inspect --format "{{json .State.Health }}" <container name>
     healthcheck:
