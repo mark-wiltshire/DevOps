@@ -74,10 +74,8 @@ def init():
         if row_count != 1:
             # create table if it doesn't exist
             print(f'Creating USERS Table')
-            create_table = "CREATE TABLE `" + _db_schema + (
-                "`.`users`(`user_id` INT NOT NULL,`user_name` VARCHAR(50) "
-                "NOT NULL, creation_date DATETIME NOT NULL, "
-                "PRIMARY KEY (`user_id`));")
+            create_table = ("CREATE TABLE `users`(`user_id` INT NOT NULL,`user_name` VARCHAR(50) NOT NULL, "
+                            "creation_date DATETIME NOT NULL, PRIMARY KEY (`user_id`));")
             _cursor.execute(create_table)
             created_user_table = True
         else:
@@ -90,13 +88,13 @@ def init():
         if row_count != 1:
             # create table if it doesn't exist
             print(f'Creating CONFIG Table')
-            create_table = "CREATE TABLE `" + _db_schema + (
-                "`.`config`(`key` VARCHAR(50) NOT NULL,`value` VARCHAR(50) NOT NULL, PRIMARY KEY (`key`));")
+            create_table = ("CREATE TABLE `config`(`key` VARCHAR(50) NOT NULL,`value` VARCHAR(50) NOT NULL, PRIMARY "
+                            "KEY (`key`));")
             _cursor.execute(create_table)
             created_config_table = True
 
             print(f'Inserting CONFIG Table')
-            prepared_config_sql = """INSERT into """ + _db_schema + """.config (`key`, `value`) VALUES (%s, %s)"""
+            prepared_config_sql = """INSERT into config (`key`, `value`) VALUES (%s, %s)"""
             _cursor.execute(prepared_config_sql, (globals.KEY_API_GATEWAY, '0.0.0.0:5000/users'))
             _cursor.execute(prepared_config_sql, (globals.KEY_TEST_BROWSER, 'chrome'))
             _cursor.execute(prepared_config_sql, (globals.KEY_TEST_USER_NAME, 'Bob'))
@@ -128,7 +126,7 @@ def init_config():
     """
     config_dict = defaultdict()
     print(f'in init_config')
-    row_count = _cursor.execute(f"Select * from {_db_schema}.config")
+    row_count = _cursor.execute(f"Select * from config")
     print(f'CONFIG row_count is [{row_count}]')
     if row_count == 0:
         return config_dict
@@ -171,7 +169,7 @@ def add_user(user_id, user_name):
 
     # Inserting data into table
     try:
-        insert_query = """INSERT into """ + _db_schema + """.users (user_id, user_name, creation_date) VALUES (%s, %s, %s)"""
+        insert_query = """INSERT into users (user_id, user_name, creation_date) VALUES (%s, %s, %s)"""
         print(f"Insert Query [{insert_query}]")
         tuple_data = (user_id, user_name, time_stamp)
         for a in tuple_data:
@@ -194,7 +192,7 @@ def read_user(user_id):
     # Reading user_name from table
     print(f'in read_user [{user_id}]')
     try:
-        row_count = _cursor.execute(f"Select user_name from {_db_schema}.users where user_id = {user_id}")
+        row_count = _cursor.execute(f"Select user_name from users where user_id = {user_id}")
         print(f'row_count is [{row_count}]')
         if row_count != 1:
             return ""
@@ -220,7 +218,7 @@ def update_user(user_id, user_name):
     print(f'in update_user [{user_id}][{user_name}]')
     try:
         row_count = _cursor.execute(
-            f"Update {_db_schema}.users set user_name = '{user_name}'  where user_id = {user_id}")
+            f"Update users set user_name = '{user_name}'  where user_id = {user_id}")
         # row_count shows the number of rows effected.
         print(f'row_count is [{row_count}]')
         if row_count != 1:
@@ -242,7 +240,7 @@ def delete_user(user_id):
     print(f'in update_user [{user_id}]')
     try:
         row_count = _cursor.execute(
-            f"Delete from {_db_schema}.users where user_id = {user_id}")
+            f"Delete from users where user_id = {user_id}")
         # row_count shows the number of rows effected.
         print(f'row_count is [{row_count}]')
         if row_count != 1:
