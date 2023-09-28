@@ -39,7 +39,7 @@ services:
         condition: service_healthy
     environment:
         db_host: ${db_host}
-        db_port: 3306
+        db_port: ${db_port}
         db_user: ${db_user}
         db_pass: /run/secrets/db_password
     secrets:
