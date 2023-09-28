@@ -65,13 +65,15 @@ pipeline {
             steps {
                 echo 'Waiting for Backend Server...'
                 script {
-                    waitUntil {
-                        try {
-                            //should do windows version aswell
-                            sh "curl -s --head  --request GET  localhost:5000/users/1 | grep '200'"
-                            return true
-                        } catch (Exception e) {
-                            return false
+                    timeout(2) {
+                        waitUntil {
+                            try {
+                                //should do windows version aswell
+                                sh "curl -s --head  --request GET  localhost:5000/users/1 | grep '200'"
+                                return true
+                            } catch (Exception e) {
+                                return false
+                            }
                         }
                     }
                 }
