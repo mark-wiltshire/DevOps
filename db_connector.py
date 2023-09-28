@@ -78,6 +78,16 @@ def init():
                             "creation_date DATETIME NOT NULL, PRIMARY KEY (`user_id`));")
             _cursor.execute(create_table)
             created_user_table = True
+
+            print(f'Inserting SAMPLE data to USERS Table')
+            now = datetime.now()
+            time_stamp = now.strftime(globals.STRING_FORMAT_TIME)
+            prepared_config_sql = """INSERT into users (`user_id`, `user_name`, creation_date) VALUES (%s, %s, %s)"""
+            _cursor.execute(prepared_config_sql, ('1', 'Matthew', time_stamp))
+            _cursor.execute(prepared_config_sql, ('2', 'Bob', time_stamp))
+            _cursor.execute(prepared_config_sql, ('3', 'Paul', time_stamp))
+            _cursor.execute(prepared_config_sql, ('4', 'Ringo', time_stamp))
+            print(f'Completed USERS Table')
         else:
             print(f'USER Table exists')
 
