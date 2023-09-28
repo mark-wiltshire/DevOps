@@ -189,9 +189,9 @@ pipeline {
                 script {
                     try {
                         if (checkOs() == 'Windows') {
-                            bat 'python docker_backend_testing.py $local_db_host $local_db_port $DOCKER_MYSQL_CREDS_USR $DOCKER_MYSQL_CREDS_PSW'
+                            bat 'python docker_backend_testing.py localhost $local_db_port $DOCKER_MYSQL_CREDS_USR $DOCKER_MYSQL_CREDS_PSW'
                         } else {
-                            sh '${python_run_file} docker_backend_testing.py $local_db_host $local_db_port $DOCKER_MYSQL_CREDS_USR $DOCKER_MYSQL_CREDS_PSW'
+                            sh '${python_run_file} docker_backend_testing.py localhost $local_db_port $DOCKER_MYSQL_CREDS_USR $DOCKER_MYSQL_CREDS_PSW'
                         }
                     } catch (Exception e) {
                         echo 'Exception Running Python backend_testing.py!'
