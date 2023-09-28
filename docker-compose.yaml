@@ -33,7 +33,7 @@ services:
   rest:
     build: .
     container_name: devops-rest
-    image: devops-rest
+    image: devops-rest:${IMAGE_TAG}
     depends_on:
       db:
         condition: service_healthy
