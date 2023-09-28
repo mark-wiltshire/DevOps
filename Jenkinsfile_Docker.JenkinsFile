@@ -64,13 +64,15 @@ pipeline {
         stage('Wait for Backend Server') {
             steps {
                 echo 'Waiting for Backend Server...'
-                waitUntil {
-                    try {
-                        //should do windows version aswell
-                        sh "curl -s --head  --request GET  localhost:5000/users/1 | grep '200'"
-                        return true
-                    } catch (Exception e) {
-                        return false
+                script {
+                    waitUntil {
+                        try {
+                            //should do windows version aswell
+                            sh "curl -s --head  --request GET  localhost:5000/users/1 | grep '200'"
+                            return true
+                        } catch (Exception e) {
+                            return false
+                        }
                     }
                 }
             }
