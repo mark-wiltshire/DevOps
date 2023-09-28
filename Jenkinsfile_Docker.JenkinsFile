@@ -255,7 +255,7 @@ pipeline {
                         // sh 'docker volume rm devops-db-data'
                         sh 'rm .env'
                         sh 'rm db_password.txt'
-                        sh 'rm root_db_password.txt'
+                        sh 'rm db_root_password.txt'
                     }
                 } catch (Exception e) {
                     echo 'Exception Running Cleanup! {e}'
