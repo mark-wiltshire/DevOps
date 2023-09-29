@@ -222,8 +222,6 @@ pipeline {
     post {
         always {
             //we always want to clean up even if the build failed
-            echo 'Running Cleanup'
-
             // 1. run cleanenvironment
             // 1. Docker-compose down
             // 2. docker delete image
@@ -244,15 +242,15 @@ pipeline {
                         bat 'docker volume rm devops-db-data'
                         bat 'del .env'
                         bat 'del db_password.txt'
-                        bat 'rm root_db_password.txt'
+                        bat 'del root_db_password.txt'
                     } else {
-                        sh '${python_run_file} clean_environment.py'
-                        sh 'docker-compose down'
-                        sh 'docker rmi $docker_image_name'
-                        sh 'docker rmi $docker_image_name:$base_version$BUILD_NUMBER'
-                        sh 'docker rmi $MYDOCKER_CREDS_USR/$docker_image_name:latest'
-                        sh 'docker rmi $MYDOCKER_CREDS_USR/$docker_image_name:$base_version$BUILD_NUMBER'
-                        sh 'docker volume rm devops-db-data'
+                        //sh '${python_run_file} clean_environment.py'
+                        //sh 'docker-compose down'
+                        //sh 'docker rmi $docker_image_name'
+                        //sh 'docker rmi $docker_image_name:$base_version$BUILD_NUMBER'
+                        //sh 'docker rmi $MYDOCKER_CREDS_USR/$docker_image_name:latest'
+                        //sh 'docker rmi $MYDOCKER_CREDS_USR/$docker_image_name:$base_version$BUILD_NUMBER'
+                        //sh 'docker volume rm devops-db-data'
                         sh 'rm .env'
                         sh 'rm db_password.txt'
                         sh 'rm db_root_password.txt'
