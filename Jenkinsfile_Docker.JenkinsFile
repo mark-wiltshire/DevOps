@@ -34,7 +34,7 @@ pipeline {
     stages {
         stage('Pull Code') {
             steps {
-                echo "Running ${env.JOB_NAME}  Build ${env.BUILD_NUMBER} on ${env.JENKINS_URL} parameters - testing ${params.testing}"
+                echo "Running ${env.JOB_NAME}  Build ${env.BUILD_NUMBER} on ${env.JENKINS_URL} Local then DOCKER testing"
                 echo 'Pulling Code'
                 script {
                     properties([pipelineTriggers([pollSCM('30 * * * *')])])
