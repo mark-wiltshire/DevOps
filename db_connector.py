@@ -19,6 +19,7 @@ Methods
 
 """
 import time
+from datetime import datetime
 from collections import defaultdict
 
 import pymysql
@@ -56,7 +57,7 @@ def get_connection(db_host, db_port, db_user, db_password):
         while retry_flag and retry_count < 5:
             try:
                 _connection = pymysql.connect(host=db_host, port=db_port, user=db_user,
-                                      passwd=db_password, db=_db_schema)
+                                              passwd=db_password, db=_db_schema)
                 _connection.autocommit(True)
                 # Getting a cursor from Database
                 # for prepared statements (using mysql)
