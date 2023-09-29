@@ -71,6 +71,11 @@ def get_connection(db_host, db_port, db_user, db_password):
                 print(f"Retrying after 5 seconds")
                 retry_count += 1
                 time.sleep(5)
+
+    # check for no connection
+    if not _connection:
+        raise Exception("get_connection Cannot connect to DB [")
+
     return _connection
 
 
