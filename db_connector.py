@@ -6,6 +6,8 @@ Username and password are currently hardcoded in the code.
 
 Used by rest_app.py and web_app.py
 
+Updated added retry connection
+
 Methods
 - get_connection() - will initialise connection and cursor to the Database
 - init() - will create the DB table if they do not exist
@@ -16,8 +18,8 @@ Methods
 - delete_user() - will delete user
 
 """
+import time
 from collections import defaultdict
-from datetime import datetime
 
 import pymysql
 import globals
@@ -38,23 +40,37 @@ def get_connection(db_host, db_port, db_user, db_password):
     Will create or return a connection to the Database
     user and password currently hardcoded.
 
+    Will retry connection on an exception up to 5 times
+
     :return: pymysql.connections.Connection
     """
     global _connection
     global _cursor
     global _db_schema
+
+    retry_flag = True
+    retry_count = 0
     if not _connection:
         _db_schema = db_user
-        _connection = pymysql.connect(host=db_host, port=db_port, user=db_user,
+
+        while retry_flag and retry_count < 5:
+            try:
+                _connection = pymysql.connect(host=db_host, port=db_port, user=db_user,
                                       passwd=db_password, db=_db_schema)
-        _connection.autocommit(True)
-        # Getting a cursor from Database
-        # for prepared statements (using mysql)
-        #   - https://pynative.com/python-mysql-execute-parameterized-query-using-prepared-statement/
-        # use line below.
-        # _cursor = _connection.cursor(prepared=True)
-        _cursor = _connection.cursor()
-        print("DB Connection Opened")
+                _connection.autocommit(True)
+                # Getting a cursor from Database
+                # for prepared statements (using mysql)
+                #   - https://pynative.com/python-mysql-execute-parameterized-query-using-prepared-statement/
+                # use line below.
+                # _cursor = _connection.cursor(prepared=True)
+                _cursor = _connection.cursor()
+                print(f"DB Connection Opened [{retry_count}]")
+                break
+            except Exception as e:
+                print(f"Retry [{retry_count} Failed {e}")
+                print(f"Retrying after 5 seconds")
+                retry_count += 1
+                time.sleep(5)
     return _connection
 
 
