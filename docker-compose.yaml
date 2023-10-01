@@ -1,6 +1,6 @@
 version: '3.7'
 services:
-  db:
+  devops-db:
     hostname: devops-db
     container_name: devops-db
     image: mysql:8.0.33
@@ -32,7 +32,7 @@ services:
       test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
       timeout: 20s
       retries: 10
-  rest:
+  devops-rest:
     build: .
     hostname: devops-rest
     container_name: devops-rest
