@@ -96,23 +96,6 @@ pipeline {
                 }
             }
         }
-        stage('Run Clean Up') {
-            steps {
-                echo 'Running Cleanup'
-                script {
-                    try {
-                        if (checkOs() == 'Windows') {
-                            bat 'python clean_environment.py'
-                        } else {
-                            sh '${python_run_file} clean_environment.py'
-                        }
-                    } catch (Exception e) {
-                        echo 'Exception Running Python clean_environment.py!'
-                        error('Aborting the build')
-                    }
-                }
-            }
-        }
         stage('Build Docker Image') {
             steps {
                 echo 'Running Build Docker Image'
@@ -234,23 +217,21 @@ pipeline {
                 try {
                     if (checkOs() == 'Windows') {
                         bat 'python clean_environment.py'
-                        bat 'docker-compose down'
+                        bat 'docker-compose down -v'
                         bat 'docker rmi $docker_image_name'
                         bat 'docker rmi $docker_image_name:$base_version$BUILD_NUMBER'
                         bat 'docker rmi $MYDOCKER_CREDS_USR/$docker_image_name:latest'
                         bat 'docker rmi $MYDOCKER_CREDS_USR/$docker_image_name:$base_version$BUILD_NUMBER'
-                        bat 'docker volume rm devops-db-data'
                         bat 'del .env'
                         bat 'del db_password.txt'
                         bat 'del db_root_password.txt'
                     } else {
                         sh '${python_run_file} clean_environment.py'
-                        sh 'docker-compose down'
+                        sh 'docker-compose down -v'
                         sh 'docker rmi $docker_image_name'
                         sh 'docker rmi $docker_image_name:$base_version$BUILD_NUMBER'
                         sh 'docker rmi $MYDOCKER_CREDS_USR/$docker_image_name:latest'
                         sh 'docker rmi $MYDOCKER_CREDS_USR/$docker_image_name:$base_version$BUILD_NUMBER'
-                        sh 'docker volume rm devops-db-data'
                         sh 'rm .env'
                         sh 'rm db_password.txt'
                         sh 'rm db_root_password.txt'
