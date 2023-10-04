@@ -37,9 +37,9 @@ import db_connector
 
 # parse arguments
 parser = argparse.ArgumentParser(description="Run our Rest API")
-parser.add_argument("db_host", type=str, help="the DB host")
-parser.add_argument("db_port", type=int, help="the DB port")
-parser.add_argument("db_user", type=str, help="the DB username")
+parser.add_argument("--db_host", type=str, help="the DB host")
+parser.add_argument("--db_port", type=int, help="the DB port")
+parser.add_argument("--db_user", type=str, help="the DB username")
 parser.add_argument("--db_pass", type=str, help="the DB password")
 args = parser.parse_args()
 

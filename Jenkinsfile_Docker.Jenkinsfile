@@ -48,11 +48,11 @@ pipeline {
                 script {
                     try {
                         if (checkOs() == 'Windows') {
-                            bat 'start/min python rest_app.py $remote_db_host $remote_db_port $REMOTE_MYSQL_CREDS_USR --db_pass $REMOTE_MYSQL_CREDS_PSW'
+                            bat 'start/min python rest_app.py --db_host=$remote_db_host --db_port=$remote_db_port --db_user=$REMOTE_MYSQL_CREDS_USR --db_pass=$REMOTE_MYSQL_CREDS_PSW'
                         } else {
                             //sh 'nohup python rest_app.py &'
                             //sh 'nohup python3 rest_app.py &'
-                            sh 'nohup ${python_run_file} rest_app.py $remote_db_host $remote_db_port $REMOTE_MYSQL_CREDS_USR --db_pass $REMOTE_MYSQL_CREDS_PSW &'
+                            sh 'nohup ${python_run_file} rest_app.py --db_host=$remote_db_host --db_port=$remote_db_port --db_user=$REMOTE_MYSQL_CREDS_USR --db_pass=$REMOTE_MYSQL_CREDS_PSW &'
                         }
                     } catch (Exception e) {
                         echo 'Exception Running Python rest_app.py!'
