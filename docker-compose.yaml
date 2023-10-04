@@ -38,7 +38,7 @@ services:
     container_name: devops-rest
     image: devops-rest:${IMAGE_TAG}
     depends_on:
-      db:
+      devops-db:
         condition: service_healthy
     environment:
         db_host: ${db_host}
