@@ -10,7 +10,7 @@ required arguments
 db_host
 db_port
 db_user
-db_password
+db_pass
 """
 import argparse  # https://docs.python.org/3/howto/argparse.html
 import requests
@@ -23,11 +23,11 @@ parser = argparse.ArgumentParser(description="Run Backend Testing")
 parser.add_argument("db_host", type=str, help="the DB host")
 parser.add_argument("db_port", type=int, help="the DB port")
 parser.add_argument("db_user", type=str, help="the DB username")
-parser.add_argument("db_password", type=str, help="the DB password")
+parser.add_argument("db_pass", type=str, help="the DB password")
 args = parser.parse_args()
 
 # open and initialise DB Connection
-db_connector.get_connection(args.db_host, args.db_port, args.db_user, args.db_password)
+db_connector.get_connection(args.db_host, args.db_port, args.db_user, args.db_pass)
 db_connector.init()
 
 # initialise globals
