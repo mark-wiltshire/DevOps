@@ -12,11 +12,11 @@ if user_id is already in use in the DB - it will try with random ID till it work
 when adding user - if user_id is already used will keep trying with new random ID until user is added
 will return new user_id
 
-required arguments
+optional arguments
 db_host
 db_port
 db_user
-db_password
+db_pass - could be secret path or password
 
 Gets
 api_host
@@ -43,12 +43,14 @@ parser.add_argument("--db_user", type=str, help="the DB username")
 parser.add_argument("--db_pass", type=str, help="the DB password")
 args = parser.parse_args()
 
-# check if password is passed as argument / otherwise try and read from /run/secrets/db_password
-# as this is where it will be stored in a container docker secret
+# check if db_pass is passed as secret file
 db_pass = args.db_pass
-if db_pass is None:
+isFile = os.path.exists(db_pass)
+print(f"password isFile [{isFile}]")
+# as this is where it will be stored in a container docker secret - overwrite it with password in the file
+if isFile:
     try:
-        with open('/run/secrets/db_password', 'r') as file:
+        with open(db_pass, 'r') as file:
             db_pass = file.read().strip()
     except Exception as e:
         print(e)
