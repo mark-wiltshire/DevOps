@@ -1,0 +1,14 @@
+replicaCount: 1
+
+image:
+  repository: markjwiltshire/devops-rest:version1.0.100
+  pullPolicy: Always
+  tag: ""
+  
+service:
+    type: LoadBalancer
+
+db_host: ""
+db_port: ""
+db_user: ""
+db_pass: ""

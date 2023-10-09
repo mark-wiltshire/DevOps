@@ -3,3 +3,4 @@
 /.DS_Store
 /db_password.txt
 /db_root_password.txt
+/k8s_url.txt

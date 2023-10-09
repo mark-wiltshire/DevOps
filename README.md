@@ -1,16 +1,37 @@
 # Global Dev Experts - DevOps - Project First part
 
-### First Part Project for DevOps Course
+### Project for DevOps Course
 
 Mark Wiltshire
 Contains all code for PyCharm Project for the Global Dev Experts - DevOps course
+
+## Part 4 - Helm and K8S
+New Files
+- Jenkinsfile_Helm.Jenkinsfile
+- DIRECTORY helm
+- K8S_backend_testing.py
+
+Steps
+- cd helm | helm create devops
+- cd devops
+- copiedCopy service.yaml and deployment.yaml from  https://github.com/Dgotlieb/K8S-HELM
+- cleaned up other files
+- helm install --dry-run --debug devops . //dry run test
+- to check - kubectl get svc - kubectl get pods - kubectl describe pod <pod_name>
+- had to rewrite how rest_app.py is called in dockerfile so I could call from Helm
+
+Extras
+- DONE - using secrets in HELM
+- ConfigMap
+- K8S stateful application - PersistentVolume - PersistentVolumeClaim
+- mysql in helm deployment
 
 ## Part 3 - Docker
 
 1. NEW Jenkins build file  - will checkout, test, build & Push Docker Image and Test on Docker
 
 New Files
-- Jenkins_Docker.Jenkinsfile - New Jenkins Build Pipeline
+- Jenkinsfile_Docker.Jenkinsfile - New Jenkins Build Pipeline
 - Dockerfile - to run the docker container running the rest_app.py
 - requirements.txt - contains python requirements for rest_app.py
 - docker-compose.yaml - docker compose to run the rest_app.py - see https://docs.docker.com/compose/reference/

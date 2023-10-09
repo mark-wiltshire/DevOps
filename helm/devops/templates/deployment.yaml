@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: devops-rest
+spec:
+  selector:
+    matchLabels:
+      app: devops-rest
+  replicas: {{ .Values.replicaCount }}
+  template:
+    metadata:
+      labels:
+        app: devops-rest
+    spec:
+      containers:
+      - name: devops-rest
+        image: {{ .Values.image.repository }}
+        env :
+          - name: "db_host"
+            value: "{{ .Values.db_host }}"
+          - name: "db_port"
+            value: "{{int .Values.db_port }}"
+          - name: "db_user"
+            valueFrom:
+              secretKeyRef:
+                key: db_user
+                name: {{ .Release.Name }}-auth
+          - name: "db_pass"
+            valueFrom:
+              secretKeyRef:
+                key: db_pass
+                name: {{ .Release.Name }}-auth
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 5000
