@@ -334,7 +334,6 @@ pipeline {
                     if (checkOs() == 'Windows') {
                         bat 'python clean_environment.py'
                         bat 'docker-compose down -v'
-                        bat 'docker rmi $docker_image_name'
                         bat 'docker rmi $docker_image_name:$base_version$BUILD_NUMBER'
                         bat 'docker rmi $MYDOCKER_CREDS_USR/$docker_image_name:latest'
                         bat 'docker rmi $MYDOCKER_CREDS_USR/$docker_image_name:$base_version$BUILD_NUMBER'
@@ -346,7 +345,6 @@ pipeline {
                     } else {
                         sh '${python_run_file} clean_environment.py'
                         sh 'docker-compose down -v'
-                        sh 'docker rmi $docker_image_name'
                         sh 'docker rmi $docker_image_name:$base_version$BUILD_NUMBER'
                         sh 'docker rmi $MYDOCKER_CREDS_USR/$docker_image_name:latest'
                         sh 'docker rmi $MYDOCKER_CREDS_USR/$docker_image_name:$base_version$BUILD_NUMBER'
