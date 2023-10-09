@@ -113,9 +113,9 @@ pipeline {
                 }
             }
         }
-        stage('Build Docker Image') {
+        stage('Build & Tag Docker Image') {
             steps {
-                echo 'Running Build Docker Image'
+                echo 'Running Build & Tag Docker Image'
                 script {
                     try {
                         if (checkOs() == 'Windows') {
@@ -130,9 +130,9 @@ pipeline {
                 }
             }
         }
-        stage('Tag, Login & Push Docker Image') {
+        stage('Login & Push Docker Image') {
             steps {
-                echo 'Running Tag, Login & Push Docker Image'
+                echo 'Running Login & Push Docker Image'
                 // using https://docs.docker.com/docker-hub/access-tokens/ to login to docker hub
                 // hub login credentials setup in Jenkins
                 // tag twice - 1st - with latest - 2nd with latest version number
