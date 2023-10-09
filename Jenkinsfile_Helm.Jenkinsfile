@@ -255,9 +255,9 @@ pipeline {
                 script {
                     try {
                         if (checkOs() == 'Windows') {
-                            bat 'helm install devops --set db_host="$remote_db_host" --set db_post="$remote_db_port" --set db_user="$REMOTE_MYSQL_CREDS_USR" --set db_pass="$REMOTE_MYSQL_CREDS_PSW" ./helm/devops/.'
+                            bat 'helm install devops --set image.repository="$MYDOCKER_CREDS_USR/$docker_image_name:$base_version$BUILD_NUMBER" --set db_host="$remote_db_host" --set db_post="$remote_db_port" --set db_user="$REMOTE_MYSQL_CREDS_USR" --set db_pass="$REMOTE_MYSQL_CREDS_PSW" ./helm/devops/.'
                         } else {
-                            sh 'helm install devops --set db_host="$remote_db_host" --set db_post="$remote_db_port" --set db_user="$REMOTE_MYSQL_CREDS_USR" --set db_pass="$REMOTE_MYSQL_CREDS_PSW" ./helm/devops/.'
+                            sh 'helm install devops --set image.repository="$MYDOCKER_CREDS_USR/$docker_image_name:$base_version$BUILD_NUMBER" --set db_host="$remote_db_host" --set db_post="$remote_db_port" --set db_user="$REMOTE_MYSQL_CREDS_USR" --set db_pass="$REMOTE_MYSQL_CREDS_PSW" ./helm/devops/.'
                         }
                     } catch (Exception e) {
                         echo 'Exception Running Deloy Helm!'
@@ -327,6 +327,8 @@ pipeline {
             // 1. Docker-compose down
             // 2. docker delete image
             // 3. .env file
+            // 4. helm delte devops
+            // 5. delete files db_password.txt, db_root_password.txt and k8s_url.txt
             // can get image id from - docker images | grep rest_app | awk '{print $3}'
             //we always want to clean up even if the build failed
             echo 'Running Post Cleanup'
