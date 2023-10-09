@@ -119,9 +119,9 @@ pipeline {
                 script {
                     try {
                         if (checkOs() == 'Windows') {
-                            bat 'docker build -t $docker_image_name .'
+                            bat 'docker build -t $MYDOCKER_CREDS_USR/$docker_image_name:latest -t $MYDOCKER_CREDS_USR/$docker_image_name:$base_version$BUILD_NUMBER .'
                         } else {
-                            sh 'docker build -t $docker_image_name .'
+                            sh 'docker build -t $MYDOCKER_CREDS_USR/$docker_image_name:latest -t $MYDOCKER_CREDS_USR/$docker_image_name:$base_version$BUILD_NUMBER .'
                         }
                     } catch (Exception e) {
                         echo 'Exception Running Docker Build!'
@@ -139,13 +139,9 @@ pipeline {
                 script {
                     try {
                         if (checkOs() == 'Windows') {
-                            bat 'docker tag $docker_image_name $MYDOCKER_CREDS_USR/$docker_image_name:latest'
-                            bat 'docker tag $docker_image_name $MYDOCKER_CREDS_USR/$docker_image_name:$base_version$BUILD_NUMBER'
                             bat 'echo $MYDOCKER_CREDS_PSW | docker login -u $MYDOCKER_CREDS_USR --password-stdin'
                             bat 'docker push -a $MYDOCKER_CREDS_USR/$docker_image_name'
                         } else {
-                            sh 'docker tag $docker_image_name $MYDOCKER_CREDS_USR/$docker_image_name:latest'
-                            sh 'docker tag $docker_image_name $MYDOCKER_CREDS_USR/$docker_image_name:$base_version$BUILD_NUMBER'
                             sh 'echo $MYDOCKER_CREDS_PSW | docker login -u $MYDOCKER_CREDS_USR --password-stdin'
                             sh 'docker push -a $MYDOCKER_CREDS_USR/$docker_image_name'
                         }
