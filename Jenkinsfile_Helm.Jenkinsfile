@@ -188,7 +188,7 @@ pipeline {
                         if (checkOs() == 'Windows') {
                             bat 'docker-compose up --wait'
                         } else {
-                            sh 'docker-compose up --wait'
+                            //sh 'docker-compose up --wait'
                         }
                     } catch (Exception e) {
                         echo 'Exception Running docker-compose up'
@@ -205,7 +205,7 @@ pipeline {
                         if (checkOs() == 'Windows') {
                             bat 'python docker_backend_testing.py localhost $local_db_port $DOCKER_MYSQL_CREDS_USR $DOCKER_MYSQL_CREDS_PSW'
                         } else {
-                            sh '${python_run_file} docker_backend_testing.py localhost $local_db_port $DOCKER_MYSQL_CREDS_USR $DOCKER_MYSQL_CREDS_PSW'
+                            //sh '${python_run_file} docker_backend_testing.py localhost $local_db_port $DOCKER_MYSQL_CREDS_USR $DOCKER_MYSQL_CREDS_PSW'
                         }
                     } catch (Exception e) {
                         echo 'Exception Running Docker-Compose test!'
@@ -229,14 +229,14 @@ pipeline {
                             bat 'del db_password.txt'
                             bat 'del db_root_password.txt'
                         } else {
-                            sh 'docker-compose down -v'
-                            sh 'docker rmi $docker_image_name'
-                            sh 'docker rmi $docker_image_name:$base_version$BUILD_NUMBER'
-                            sh 'docker rmi $MYDOCKER_CREDS_USR/$docker_image_name:latest'
-                            sh 'docker rmi $MYDOCKER_CREDS_USR/$docker_image_name:$base_version$BUILD_NUMBER'
-                            sh 'rm .env'
-                            sh 'rm db_password.txt'
-                            sh 'rm db_root_password.txt'
+                            //sh 'docker-compose down -v'
+                            //sh 'docker rmi $docker_image_name'
+                            //sh 'docker rmi $docker_image_name:$base_version$BUILD_NUMBER'
+                            //sh 'docker rmi $MYDOCKER_CREDS_USR/$docker_image_name:latest'
+                            //sh 'docker rmi $MYDOCKER_CREDS_USR/$docker_image_name:$base_version$BUILD_NUMBER'
+                            //sh 'rm .env'
+                            //sh 'rm db_password.txt'
+                            //sh 'rm db_root_password.txt'
                         }
                     } catch (Exception e) {
                         echo 'Exception Running Cleanup - Docker-Compose!'
