@@ -251,9 +251,9 @@ pipeline {
                 script {
                     try {
                         if (checkOs() == 'Windows') {
-                            bat 'helm install devops --wait --set image.repository="$MYDOCKER_CREDS_USR/$docker_image_name:$base_version$BUILD_NUMBER" --set db_host="$remote_db_host" --set db_post="$remote_db_port" --set db_user="$REMOTE_MYSQL_CREDS_USR" --set db_pass="$REMOTE_MYSQL_CREDS_PSW" ./helm/devops/.'
+                            bat 'helm install devops --wait --set image.repository="$MYDOCKER_CREDS_USR/$docker_image_name:$base_version$BUILD_NUMBER" --set db_host="$remote_db_host" --set db_port="$remote_db_port" --set db_user="$REMOTE_MYSQL_CREDS_USR" --set db_pass="$REMOTE_MYSQL_CREDS_PSW" ./helm/devops/.'
                         } else {
-                            sh 'helm install devops --wait --set image.repository="$MYDOCKER_CREDS_USR/$docker_image_name:$base_version$BUILD_NUMBER" --set db_host="$remote_db_host" --set db_post="$remote_db_port" --set db_user="$REMOTE_MYSQL_CREDS_USR" --set db_pass="$REMOTE_MYSQL_CREDS_PSW" ./helm/devops/.'
+                            sh 'helm install devops --wait --set image.repository="$MYDOCKER_CREDS_USR/$docker_image_name:$base_version$BUILD_NUMBER" --set db_host="$remote_db_host" --set db_port="$remote_db_port" --set db_user="$REMOTE_MYSQL_CREDS_USR" --set db_pass="$REMOTE_MYSQL_CREDS_PSW" ./helm/devops/.'
                         }
                     } catch (Exception e) {
                         echo 'Exception Running Deloy Helm!'
