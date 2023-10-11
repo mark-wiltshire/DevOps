@@ -113,44 +113,40 @@ pipeline {
                 }
             }
         }
-        stage('Build Docker Image') {
+        stage('Build & Tag Docker Image') {
             steps {
-                echo 'Running Build Docker Image'
+                echo 'Running Build & Tag Docker Image'
                 script {
                     try {
                         if (checkOs() == 'Windows') {
-                            bat 'docker build -t $docker_image_name .'
+                            bat 'docker build -t $MYDOCKER_CREDS_USR/$docker_image_name:latest -t $MYDOCKER_CREDS_USR/$docker_image_name:$base_version$BUILD_NUMBER .'
                         } else {
-                            sh 'docker build -t $docker_image_name .'
+                            sh 'docker build -t $MYDOCKER_CREDS_USR/$docker_image_name:latest -t $MYDOCKER_CREDS_USR/$docker_image_name:$base_version$BUILD_NUMBER .'
                         }
                     } catch (Exception e) {
-                        echo 'Exception Running Docker Build!'
+                        echo 'Exception Running Build & Tag Docker Image!'
                         error('Aborting the build')
                     }
                 }
             }
         }
-        stage('Tag, Login & Push Docker Image') {
+        stage('Login & Push Docker Image') {
             steps {
-                echo 'Running Tag, Login & Push Docker Image'
+                echo 'Running Login & Push Docker Image'
                 // using https://docs.docker.com/docker-hub/access-tokens/ to login to docker hub
                 // hub login credentials setup in Jenkins
                 // tag twice - 1st - with latest - 2nd with latest version number
                 script {
                     try {
                         if (checkOs() == 'Windows') {
-                            bat 'docker tag $docker_image_name $MYDOCKER_CREDS_USR/$docker_image_name:latest'
-                            bat 'docker tag $docker_image_name $MYDOCKER_CREDS_USR/$docker_image_name:$base_version$BUILD_NUMBER'
                             bat 'echo $MYDOCKER_CREDS_PSW | docker login -u $MYDOCKER_CREDS_USR --password-stdin'
                             bat 'docker push -a $MYDOCKER_CREDS_USR/$docker_image_name'
                         } else {
-                            sh 'docker tag $docker_image_name $MYDOCKER_CREDS_USR/$docker_image_name:latest'
-                            sh 'docker tag $docker_image_name $MYDOCKER_CREDS_USR/$docker_image_name:$base_version$BUILD_NUMBER'
                             sh 'echo $MYDOCKER_CREDS_PSW | docker login -u $MYDOCKER_CREDS_USR --password-stdin'
                             sh 'docker push -a $MYDOCKER_CREDS_USR/$docker_image_name'
                         }
                     } catch (Exception e) {
-                        echo 'Exception Running Docker Tag, Login & Push!'
+                        echo 'Exception Running Docker Login & Push!'
                         error('Aborting the build')
                     }
                 }
@@ -235,7 +231,6 @@ pipeline {
                     if (checkOs() == 'Windows') {
                         bat 'python clean_environment.py'
                         bat 'docker-compose down -v'
-                        bat 'docker rmi $docker_image_name'
                         bat 'docker rmi $docker_image_name:$base_version$BUILD_NUMBER'
                         bat 'docker rmi $MYDOCKER_CREDS_USR/$docker_image_name:latest'
                         bat 'docker rmi $MYDOCKER_CREDS_USR/$docker_image_name:$base_version$BUILD_NUMBER'
@@ -245,7 +240,6 @@ pipeline {
                     } else {
                         sh '${python_run_file} clean_environment.py'
                         sh 'docker-compose down -v'
-                        sh 'docker rmi $docker_image_name'
                         sh 'docker rmi $docker_image_name:$base_version$BUILD_NUMBER'
                         sh 'docker rmi $MYDOCKER_CREDS_USR/$docker_image_name:latest'
                         sh 'docker rmi $MYDOCKER_CREDS_USR/$docker_image_name:$base_version$BUILD_NUMBER'
