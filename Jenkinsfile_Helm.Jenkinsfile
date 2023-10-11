@@ -124,7 +124,7 @@ pipeline {
                             sh 'docker build -t $MYDOCKER_CREDS_USR/$docker_image_name:latest -t $MYDOCKER_CREDS_USR/$docker_image_name:$base_version$BUILD_NUMBER .'
                         }
                     } catch (Exception e) {
-                        echo 'Exception Running Docker Build!'
+                        echo 'Exception Running Build & Tag Docker Image!'
                         error('Aborting the build')
                     }
                 }
@@ -146,7 +146,7 @@ pipeline {
                             sh 'docker push -a $MYDOCKER_CREDS_USR/$docker_image_name'
                         }
                     } catch (Exception e) {
-                        echo 'Exception Running Docker Tag, Login & Push!'
+                        echo 'Exception Running Docker Login & Push!'
                         error('Aborting the build')
                     }
                 }
