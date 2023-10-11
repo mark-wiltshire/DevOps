@@ -32,4 +32,11 @@ spec:
                 name: {{ .Release.Name }}-auth
         imagePullPolicy: Always
         ports:
-        - containerPort: 5000
+          - name: startup-port
+            containerPort: 5000
+        startupProbe:
+          httpGet:
+            path: /users/1
+            port: startup-port
+          initialDelaySeconds: 10
+          periodSeconds: 3
