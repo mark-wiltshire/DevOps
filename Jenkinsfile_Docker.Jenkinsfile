@@ -239,13 +239,13 @@ pipeline {
                         bat 'del db_root_password.txt'
                     } else {
                         sh '${python_run_file} clean_environment.py'
-                        sh 'docker-compose down -v'
-                        sh 'docker rmi $docker_image_name:$base_version$BUILD_NUMBER'
-                        sh 'docker rmi $MYDOCKER_CREDS_USR/$docker_image_name:latest'
-                        sh 'docker rmi $MYDOCKER_CREDS_USR/$docker_image_name:$base_version$BUILD_NUMBER'
-                        sh 'rm .env'
-                        sh 'rm db_password.txt'
-                        sh 'rm db_root_password.txt'
+                        //sh 'docker-compose down -v'
+                        //sh 'docker rmi $docker_image_name:$base_version$BUILD_NUMBER'
+                        //sh 'docker rmi $MYDOCKER_CREDS_USR/$docker_image_name:latest'
+                        //sh 'docker rmi $MYDOCKER_CREDS_USR/$docker_image_name:$base_version$BUILD_NUMBER'
+                        //sh 'rm .env'
+                        //sh 'rm db_password.txt'
+                        //sh 'rm db_root_password.txt'
                     }
                 } catch (Exception e) {
                     echo 'Exception Running Cleanup! {e}'
