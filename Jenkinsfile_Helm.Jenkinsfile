@@ -188,7 +188,7 @@ pipeline {
                         if (checkOs() == 'Windows') {
                             bat 'docker-compose up --wait'
                         } else {
-                            //sh 'docker-compose up --wait'
+                            sh 'docker-compose up --wait'
                         }
                     } catch (Exception e) {
                         echo 'Exception Running docker-compose up'
@@ -205,7 +205,7 @@ pipeline {
                         if (checkOs() == 'Windows') {
                             bat 'python docker_backend_testing.py localhost $local_db_port $DOCKER_MYSQL_CREDS_USR $DOCKER_MYSQL_CREDS_PSW'
                         } else {
-                            //sh '${python_run_file} docker_backend_testing.py localhost $local_db_port $DOCKER_MYSQL_CREDS_USR $DOCKER_MYSQL_CREDS_PSW'
+                            sh '${python_run_file} docker_backend_testing.py localhost $local_db_port $DOCKER_MYSQL_CREDS_USR $DOCKER_MYSQL_CREDS_PSW'
                         }
                     } catch (Exception e) {
                         echo 'Exception Running Docker-Compose test!'
@@ -221,7 +221,6 @@ pipeline {
                     try {
                         if (checkOs() == 'Windows') {
                             bat 'docker-compose down -v'
-                            bat 'docker rmi $docker_image_name'
                             bat 'docker rmi $docker_image_name:$base_version$BUILD_NUMBER'
                             bat 'docker rmi $MYDOCKER_CREDS_USR/$docker_image_name:latest'
                             bat 'docker rmi $MYDOCKER_CREDS_USR/$docker_image_name:$base_version$BUILD_NUMBER'
@@ -229,14 +228,13 @@ pipeline {
                             bat 'del db_password.txt'
                             bat 'del db_root_password.txt'
                         } else {
-                            //sh 'docker-compose down -v'
-                            //sh 'docker rmi $docker_image_name'
-                            //sh 'docker rmi $docker_image_name:$base_version$BUILD_NUMBER'
-                            //sh 'docker rmi $MYDOCKER_CREDS_USR/$docker_image_name:latest'
-                            //sh 'docker rmi $MYDOCKER_CREDS_USR/$docker_image_name:$base_version$BUILD_NUMBER'
-                            //sh 'rm .env'
-                            //sh 'rm db_password.txt'
-                            //sh 'rm db_root_password.txt'
+                            sh 'docker-compose down -v'
+                            sh 'docker rmi $docker_image_name:$base_version$BUILD_NUMBER'
+                            sh 'docker rmi $MYDOCKER_CREDS_USR/$docker_image_name:latest'
+                            sh 'docker rmi $MYDOCKER_CREDS_USR/$docker_image_name:$base_version$BUILD_NUMBER'
+                            sh 'rm .env'
+                            sh 'rm db_password.txt'
+                            sh 'rm db_root_password.txt'
                         }
                     } catch (Exception e) {
                         echo 'Exception Running Cleanup - Docker-Compose!'
@@ -319,7 +317,7 @@ pipeline {
     post {
         always {
             //we always want to clean up even if the build failed
-            // 1. run cleanenvironment
+            // 1. run clean_environment to stop backend server
             // 1. Docker-compose down
             // 2. docker delete image
             // 3. .env file
@@ -343,6 +341,8 @@ pipeline {
                         bat 'helm delete devops'
                         bat 'del k8s_url.txt'
                     } else {
+                        //just check background process has been stopped
+                        //if we actually  get an error we may want to leave these so we can investigate logs
                         sh '${python_run_file} clean_environment.py'
                         //sh 'docker-compose down -v'
                         //sh 'docker rmi $docker_image_name:$base_version$BUILD_NUMBER'
